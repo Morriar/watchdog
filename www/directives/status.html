@@ -9,7 +9,12 @@
 		<b>
 			{{vm.status.response_code}}
 			-
-			{{vm.translateStatus(vm.status.response_code)}}
+			<span ng-if='vm.status.response_code < 100'>
+				{{vm.status.response_body}}
+			</span>
+			<span ng-if='vm.status.response_code >= 100'>
+				{{vm.translateStatus(vm.status.response_code)}}
+			</span>
 		</b>
 	</span>
 	<br>
