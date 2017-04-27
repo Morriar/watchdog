@@ -1,0 +1,90 @@
+<div class='container'>
+	<span class='pull-right'>
+		<button class='btn btn-success' ng-click='vm.edit = !vm.edit' title='Edit site'>
+			<span class='glyphicon glyphicon-pencil' />
+		</button>
+		&nbsp;
+		<button class='btn btn-danger' ng-click='vm.removeSite()' title='Delete site'>
+			<span class='glyphicon glyphicon-trash' />
+		</button>
+	</span>
+	<h1>{{vm.site.name}}</h1>
+	<a class='text-muted' href='{{vm.site.url}}'>{{vm.site.url}}</a>
+	<br><br>
+
+	<div ng-if='vm.edit'>
+		<form ng-submit='vm.editSite()'>
+			<div class='container-fluid'>
+				<div class='col-xs-4'>
+					<div class='input-group' style='width: 100%;'>
+						<span class='input-group-addon'>
+							<span class='glyphicon glyphicon-tag' />
+						</span>
+						<input id='sitename' type='text' class='form-control'
+							ng-model='vm.site.name' placeholder='label' />
+					</div>
+				</div>
+
+				<div class='col-xs-7'>
+					<div class='input-group col-xs-7' style='width: 100%;'>
+						<span class='input-group-addon'>
+							<span class='glyphicon glyphicon-link' />
+						</span>
+						<input id='url' type='text' class='form-control'
+							ng-model='vm.site.url' placeholder='http://example.com' />
+					</div>
+				</div>
+
+				<div class='col-xs-1 text-right'>
+					<button class='btn btn-success' type='submit'>
+						<span class='glyphicon glyphicon-floppy-disk' />
+					</button>
+				</div>
+			</div>
+		</form>
+		<br><br>
+	</div>
+
+	<status status='vm.site.last_status' />
+	<br>
+	<div ng-if='vm.status && vm.status.results.length > 0'>
+		<h3>Previous status</h3>
+		<div class='panel-group'>
+			<div class='panel panel-default' ng-repeat='status in vm.status.results' ng-class='{
+				"panel-success":  status.is_ok,
+				"panel-danger": !status.is_ok
+			}'>
+				<div class='panel-heading'>
+					<span class='glyphicon glyphicon-ok' 
+						ng-if='status.is_ok' />
+					<span class='glyphicon glyphicon-remove' 
+						ng-if='!status.is_ok' />
+					&nbsp;
+					<a data-toggle='collapse' data-target='#{{status._id}}'>
+						<b>
+							<span ng-class='{
+								"text-success":  status.is_ok,
+								"text-danger": !status.is_ok
+							}'>
+								{{status.response_code}}
+								-
+								{{vm.translateStatus(status.response_code)}}
+							</span>
+						</b>
+						<span class='text-muted'>
+							@ {{ status.timestamp | date:"HH:mm:ss yyyy/MM/dd" }}
+						</span>
+					</a>
+				</div>
+				<div id='{{status._id}}' class='collapse'>
+			    	<div class='panel-body'>
+						<status status='status' />
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class='container text-center' ng-if='vm.status'>
+			<ui-pagination pagination='vm.status'/>
+		</div>
+	</div>
+</div>

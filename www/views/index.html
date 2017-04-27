@@ -1,0 +1,83 @@
+<div class='container-fluid'>
+	<form ng-submit='vm.createSite()'>
+		<div class='container-fluid'>
+			<div class='col-xs-4'>
+				<div class='input-group' style='width: 100%;'>
+					<span class='input-group-addon'>
+						<span class='glyphicon glyphicon-tag' />
+					</span>
+					<input id='sitename' type='text' class='form-control'
+						ng-model='vm.site.name' placeholder='label' />
+				</div>
+			</div>
+
+			<div class='col-xs-7'>
+				<div class='input-group col-xs-7' style='width: 100%;'>
+					<span class='input-group-addon'>
+						<span class='glyphicon glyphicon-link' />
+					</span>
+					<input id='url' type='text' class='form-control'
+						ng-model='vm.site.url' placeholder='http://example.com' />
+				</div>
+			</div>
+
+			<div class='col-xs-1 text-right'>
+				<button class='btn btn-success' type='submit'>
+					<span class='glyphicon glyphicon-plus' />
+				</button>
+			</div>
+		</div>
+	</form>
+	<br><br>
+	<div ng-if='vm.sites && vm.sites.length > 0' class='container-fluid'>
+		<div class='col-xs-4' ng-repeat='site in vm.sites'>
+			<div class='panel' ng-class='{
+				"panel-success":  site.last_status.is_ok,
+				"panel-danger": !site.last_status.is_ok
+			}'>
+				<div class='panel-heading'>
+					<span class='glyphicon glyphicon-ok' 
+						ng-if='site.last_status.is_ok' />
+					<span class='glyphicon glyphicon-remove' 
+						ng-if='!site.last_status.is_ok' />
+					&nbsp;
+					<b>
+						<a ui-sref='site({sId: site.id})' ng-class='{
+							"text-success": site.last_status.is_ok,
+							"text-danger": !site.last_status.is_ok
+						}'>{{site.name}}</a>
+					</b>
+					<a type='button' class='close text-danger pull-right'
+						ng-click='vm.removeSite(site._id)' title='Delete site'>&times;</a>
+				</div>
+				<div class='panel-body no-padding'>
+					<img style='width:100%'
+						ng-if='site.last_status.screencap'
+						ng-src='data/{{site.last_status.screencap}}.png'
+						title='last check {{ site.last_status.timestamp | date:"longDate" }} {{ site.last_status.timestamp | date:"mediumTime"}}' />
+					<img style='width:100%'
+						ng-if='!site.last_status.screencap'
+						ng-src='images/error.png'
+						title='last check {{ site.last_status.timestamp | date:"longDate" }} {{ site.last_status.timestamp | date:"mediumTime"}}' />
+				</div>
+				<div class='panel-body'>
+					<b ng-class='{
+						"text-success": site.last_status.is_ok,
+						"text-danger": !site.last_status.is_ok
+					}'>
+						{{site.last_status.response_code}}
+						-
+						<span ng-if='site.last_status.response_code < 100'>
+							{{site.last_status.response_body}}
+						</span>
+						<span ng-if='site.last_status.response_code >= 100'>
+							{{vm.translateStatus(site.last_status.response_code)}}
+						</span>
+					</b>
+					<br>
+					<a href='{{site.url}}' class='text-muted'>{{site.url}}</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
