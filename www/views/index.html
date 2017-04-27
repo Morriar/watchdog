@@ -53,7 +53,7 @@
 				<div class='panel-body no-padding'>
 					<img style='width:100%'
 						ng-if='site.last_status.screencap'
-						ng-src='data/{{site.last_status.screencap}}.png'
+						ng-src='/{{site.last_status.screencap}}'
 						title='last check {{ site.last_status.timestamp | date:"longDate" }} {{ site.last_status.timestamp | date:"mediumTime"}}' />
 					<img style='width:100%'
 						ng-if='!site.last_status.screencap'

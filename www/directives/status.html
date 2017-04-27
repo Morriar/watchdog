@@ -27,9 +27,13 @@
 	<br><br>
 
 	<ul class='nav nav-tabs'>
-		<li class='active'>
+		<li class='active' ng-if='vm.status.screencap'>
+			<a data-target='#screencap' data-toggle='tab'>
+				<span class='glyphicon glyphicon-camera' />&nbsp;
+				Screencap
+			</a>
 		</li>
-		<li>
+		<li ng-class='{active: !vm.status.screencap}'>
 			<a data-target='#body' data-toggle='tab'>
 				<span class='glyphicon glyphicon-console' />&nbsp;
 				Body
@@ -38,7 +42,10 @@
 	</ul>
 
 	<div class='tab-content'>
-	    <div class='tab-pane' id='body'>
+		<div class='panel panel-default tab-pane active' id='screencap' ng-if='vm.status.screencap'>
+			<img ng-src='/{{vm.status.screencap}}' style='width: 100%' />
+		</div>
+		<div class='tab-pane' id='body' ng-class='{active: !vm.status.screencap}'>
 			<pre><code>{{vm.status.response_body}}</code></pre>
 		</div>
 	</div>

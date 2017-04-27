@@ -15,6 +15,18 @@
 import model
 import popcorn::pop_config
 
+redef class AppConfig
+
+	# --screencap
+	var opt_screencap = new OptionString("Take a screen capture and save it under the given name",
+		"-s", "--screencap")
+
+	redef init do
+		super
+		add_option(opt_screencap)
+	end
+end
+
 var config = new AppConfig
 config.parse_options(args)
 
@@ -26,7 +38,20 @@ end
 var site = new Site(config.args.first)
 
 print "Checking {site.url}\n"
+
 var status = site.check_status(config)
+var screencap = config.opt_screencap.value
+if screencap != null then
+	if not site.gen_screencap(screencap) then
+		print "Error generating screencap"
+	else
+		status.screencap = screencap
+	end
+end
+
 print "Response code: {status.response_code}"
 print "Response time: {status.response_time}s"
 print "Response body: {status.response_body}"
+if status.screencap != null then
+	print "Screen capture generated to {status.screencap.as(not null)}"
+end

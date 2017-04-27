@@ -18,6 +18,22 @@ module api
 import popcorn
 import model
 
+redef class AppConfig
+
+	# Screen captures directory
+	var captures_dir = "data/"
+
+	# Check `site` and gen screencap in `captures_dir`
+	fun check_site(site: Site): Status do
+		var status = site.check_status(self)
+		var screen = "{captures_dir / (new MongoObjectId).id}.png"
+		if site.gen_screencap(screen) then
+			status.screencap = screen
+		end
+		return status
+	end
+end
+
 # API Router
 class APIRouter
 	super Router
@@ -97,7 +113,7 @@ class APISites
 		var arr = new JsonArray
 		for site in config.sites.find_all do
 			var form = new SiteForm(site.id, site.url, site.name)
-			form.last_status = site.check_status(config)
+			form.last_status = config.check_site(site)
 			arr.add form
 		end
 		res.json arr
@@ -137,7 +153,7 @@ class APISite
 		var site = get_site(req, res)
 		if site == null then return
 		var form = new SiteForm(site.id, site.url, site.name)
-		form.last_status = site.check_status(config)
+		form.last_status = config.check_site(site)
 		res.json form
 	end
 
@@ -179,7 +195,7 @@ class APIStatuses
 	redef fun post(req, res) do
 		var site = get_site(req, res)
 		if site == null then return
-		var status = site.check_status(config)
+		var status = config.check_site(site)
 		config.status.save status
 		res.json status
 	end
