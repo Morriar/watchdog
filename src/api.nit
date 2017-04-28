@@ -30,6 +30,7 @@ class APIRouter
 		super
 		use("/sites", new APISites(config))
 		use("/sites/:siteid", new APISite(config))
+		use("/sites/:siteid/timeline", new APISiteTimeline(config))
 		use("/sites/:siteid/status", new APIStatuses(config))
 		use("/sites/:siteid/status/:statusid", new APIStatus(config))
 
@@ -182,6 +183,27 @@ class APISite
 		if site == null then return
 		config.sites.remove_by_id(site.id)
 		res.json new SiteForm(site.id, site.url, site.name, site.last_status(config))
+	end
+end
+
+# /sites/:siteid/timeline
+#
+# GET: get all the status for `siteid`
+class APISiteTimeline
+	super APISite
+
+	redef fun get(req, res) do
+		var site = get_site(req, res)
+		if site == null then return
+
+		var arr = new JsonArray
+		for status in site.status(config, 0, 20) do
+			var obj = new JsonObject
+			obj["timestamp"] = status.timestamp
+			obj["time"] = status.response_time
+			arr.add obj
+		end
+		res.json arr
 	end
 end
 

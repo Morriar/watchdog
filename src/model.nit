@@ -49,8 +49,8 @@ class Site
 	var name: nullable String is writable
 
 	# Get all the statuses for `self`
-	fun status(config: AppConfig): Array[Status] do
-		return config.status.find_by_site(self)
+	fun status(config: AppConfig, s, l: nullable Int): Array[Status] do
+		return config.status.find_by_site(self, s, l)
 	end
 
 	# Get the last status for `self`
@@ -149,8 +149,8 @@ class StatusRepo
 	end
 
 	# Find all status for `site`
-	fun find_by_site(site: Site): Array[Status] do
-		return find_all((new MongoMatch).eq("site", site.id))
+	fun find_by_site(site: Site, s, l: nullable Int): Array[Status] do
+		return find_all((new MongoMatch).eq("site", site.id), s, l)
 	end
 
 	# Find last status for `site`
