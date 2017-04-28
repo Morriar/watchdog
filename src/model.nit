@@ -50,16 +50,12 @@ class Site
 
 	# Get all the statuses for `self`
 	fun status(config: AppConfig): Array[Status] do
-		var res = config.status.find_by_site(self)
-		(new StatusComparator).sort(res)
-		return res
+		return config.status.find_by_site(self)
 	end
 
 	# Get the last status for `self`
 	fun last_status(config: AppConfig): nullable Status do
-		var status = status(config)
-		if status.is_empty then return null
-		return status.first
+		return config.status.last_by_site(self)
 	end
 
 	# Check the site status
@@ -131,17 +127,34 @@ end
 class StatusRepo
 	super MongoRepository[Status]
 
+	redef fun find_all(q, s, l) do
+		var match = new MongoMatch
+		if q != null then
+			for k, v in q do match.eq(k, v)
+		end
+
+		var orderby = new JsonObject
+		orderby["timestamp"] = -1
+
+		var json = collection.aggregate(
+		(new MongoPipeline).match(match).sort(orderby).skip(s).limit(l))
+
+		var res = new Array[Status]
+		for obj in json do
+			var status = deserialize(obj.to_json)
+			if status == null then continue
+			res.add status
+		end
+		return res
+	end
+
 	# Find all status for `site`
 	fun find_by_site(site: Site): Array[Status] do
 		return find_all((new MongoMatch).eq("site", site.id))
 	end
-end
 
-# Sort site status by timestamp
-class StatusComparator
-	super Comparator
-
-	redef type COMPARED: Status
-
-	redef fun compare(a, b) do return b.timestamp <=> a.timestamp
+	# Find last status for `site`
+	fun last_by_site(site: Site): nullable Status do
+		return find((new MongoMatch).eq("site", site.id))
+	end
 end
