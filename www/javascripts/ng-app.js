@@ -110,15 +110,33 @@
 			controller: function($scope) {
 				var vm = this;
 
-				vm.pages = [];
-				var page = 0;
-				while(page < vm.pagination.max) {
-					page++;
-					vm.pages.push(page);
+				$scope.$watch('pagination.pagination', function(pagination) {
+					if(!pagination) return;
+					vm.computePages(pagination);
+				})
+
+				vm.computePages = function(pagination) {
+					vm.pages = [];
+					var len = 11;
+					var page = pagination.page;
+					var start = page - Math.floor(len / 2);
+					var end = page + Math.floor(len / 2);
+
+					if(start < 1) {
+						end = Math.min(pagination.max, end + Math.abs(start) + 1)
+						start = 1
+					} else if(end > pagination.max) {
+						start = Math.max(1, start - Math.abs(end - pagination.max))
+						end = pagination.max;
+					}
+
+					for(var i = start; i <= end; i++) {
+						vm.pages.push(i);
+					}
 				}
 
 				vm.changePage = function(page, limit) {
-					if(page <= 0 || page > vm.pages.length) return;
+					if(page <= 0 || page > vm.pagination.max) return;
 					var suffix = vm.suffix ? vm.suffix : '';
 					$scope.$emit('change-page' + suffix, page, limit);
 				}
