@@ -167,10 +167,11 @@
 
 			$scope.$on('submit-site', function(e, site) {
 				Sites.createSite(site, function(data) {
+					vm.error = null;
 					vm.init();
 					vm.loadSites();
 					$scope.$emit('alert', {status: 'success', message: 'Site created'})
-				}, Errors.handleError);
+				}, function(error) { vm.error = error });
 			})
 
 			$scope.$on('delete-site', function(e, id) {
@@ -201,17 +202,16 @@
 				Sites.getStatuses(vm.site.id, page, limit,
 					function(data) {
 						vm.status = data;
-					}, function(err) {
-						vm.error = err;
-					});
+					}, Errors.handleError);
 			}
 
 			$scope.$on('submit-site', function(e, site) {
 				Sites.editSite(site.id, site, function(data) {
+					vm.error = null;
 					vm.site = data;
 					vm.edit = false;
 					$scope.$emit('alert', {status: 'success', message: 'Site saved'})
-				}, Errors.handleError);
+				}, function(error) { vm.error = error });
 			})
 
 			$scope.$on('change-page', function(e, page, limit) {
@@ -230,7 +230,8 @@
 				scope: {},
 				bindToController: {
 					new: '=',
-					site: '='
+					site: '=',
+					errors: '='
 				},
 				controller: function($scope) {
 					var vm = this;

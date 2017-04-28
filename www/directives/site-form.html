@@ -1,22 +1,32 @@
 <form ng-submit='vm.submit()'>
 	<div class='container-fluid'>
 		<div class='col-xs-4'>
-			<div class='input-group' style='width: 100%;'>
-				<span class='input-group-addon'>
-					<span class='glyphicon glyphicon-tag' />
+			<div class='form-group' ng-class='{"has-error": vm.errors.name}'>
+				<div class='input-group' style='width: 100%;'>
+					<span class='input-group-addon'>
+						<span class='glyphicon glyphicon-tag' />
+					</span>
+					<input id='sitename' type='text' class='form-control'
+						ng-model='vm.site.name' placeholder='label' />
+				</div>
+				<span class='help-block' ng-if='vm.errors.name'>
+					<span ng-repeat='error in vm.errors.name'>{{error}}<br></span>
 				</span>
-				<input id='sitename' type='text' class='form-control'
-					ng-model='vm.site.name' placeholder='label' />
 			</div>
 		</div>
 
 		<div class='col-xs-7'>
-			<div class='input-group col-xs-7' style='width: 100%;'>
-				<span class='input-group-addon'>
-					<span class='glyphicon glyphicon-link' />
+			<div class='form-group' ng-class='{"has-error": vm.errors.url}'>
+				<div class='input-group col-xs-7' style='width: 100%;'>
+					<span class='input-group-addon'>
+						<span class='glyphicon glyphicon-link' />
+					</span>
+					<input id='url' type='text' class='form-control'
+						ng-model='vm.site.url' placeholder='http://example.com' />
+				</div>
+				<span class='help-block' ng-if='vm.errors.url'>
+					<span ng-repeat='error in vm.errors.url'>Is not a valid URL<br></span>
 				</span>
-				<input id='url' type='text' class='form-control'
-					ng-model='vm.site.url' placeholder='http://example.com' />
 			</div>
 		</div>
 
