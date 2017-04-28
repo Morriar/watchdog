@@ -253,6 +253,26 @@
 			};
 		})
 
+		.directive('siteStatusString', function () {
+			return {
+				scope: {},
+				bindToController: {
+					status: '='
+				},
+				controller: function(Sites) {
+					if(this.status.response_code < 100) {
+						this.statusString = this.status.response_body;
+					} else {
+						this.statusString = Sites.code2string[this.status.response_code];
+					}
+				},
+				controllerAs: 'vm',
+				restrict: 'E',
+				replace: true,
+				templateUrl: '/directives/site-status-string.html'
+			};
+		})
+
 		.directive('status', function () {
 			return {
 				scope: {},

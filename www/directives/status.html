@@ -6,16 +6,7 @@
 		<span class='glyphicon glyphicon-ok' ng-if='vm.status.is_ok' />
 		<span class='glyphicon glyphicon-remove' ng-if='!vm.status.is_ok' />
 		&nbsp;
-		<b>
-			{{vm.status.response_code}}
-			-
-			<span ng-if='vm.status.response_code < 100'>
-				{{vm.status.response_body}}
-			</span>
-			<span ng-if='vm.status.response_code >= 100'>
-				{{vm.translateStatus(vm.status.response_code)}}
-			</span>
-		</b>
+		<site-status-string status='vm.status' />
 	</span>
 	<br>
 	<span>

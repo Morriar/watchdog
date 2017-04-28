@@ -61,21 +61,7 @@
 						ng-if='!status.is_ok' />
 					&nbsp;
 					<a data-toggle='collapse' data-target='#{{status._id}}'>
-						<b>
-							<span ng-class='{
-								"text-success":  status.is_ok,
-								"text-danger": !status.is_ok
-							}'>
-								{{status.response_code}}
-								-
-								<span ng-if='status.response_code < 100'>
-									{{status.response_body}}
-								</span>
-								<span ng-if='status.response_code >= 100'>
-									{{vm.translateStatus(status.response_code)}}
-								</span>
-							</span>
-						</b>
+						<site-status-string status='status' />
 						<span class='text-muted'>
 							@ {{ status.timestamp | date:"HH:mm:ss yyyy/MM/dd" }}
 						</span>

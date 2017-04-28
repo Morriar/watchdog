@@ -28,19 +28,7 @@
 			title='last check {{ vm.site.last_status.timestamp | date:"longDate" }} {{ vm.site.last_status.timestamp | date:"mediumTime"}}' />
 	</div>
 	<div class='panel-body'>
-		<b ng-class='{
-			"text-success": vm.site.last_status.is_ok,
-			"text-danger": !vm.site.last_status.is_ok
-		}'>
-			{{vm.site.last_status.response_code}}
-			-
-			<span ng-if='vm.site.last_status.response_code < 100'>
-				{{vm.site.last_status.response_body}}
-			</span>
-			<span ng-if='vm.site.last_status.response_code >= 100'>
-				{{vm.translateStatus(vm.site.last_status.response_code)}}
-			</span>
-		</b>
+		<site-status-string status='vm.site.last_status' />
 		<br>
 		<a href='{{vm.site.url}}' class='text-muted'>{{vm.site.url}}</a>
 	</div>

@@ -1,0 +1,6 @@
+<b>
+	<span ng-class='{
+		"text-success":  vm.status.is_ok,
+		"text-danger": !vm.status.is_ok
+	}'>{{vm.status.response_code}} - {{vm.statusString}}</span>
+</b>
