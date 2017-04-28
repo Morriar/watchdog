@@ -16,23 +16,7 @@
 module api
 
 import popcorn
-import model
-
-redef class AppConfig
-
-	# Screen captures directory
-	var captures_dir = "data/"
-
-	# Check `site` and gen screencap in `captures_dir`
-	fun check_site(site: Site): Status do
-		var status = site.check_status(self)
-		var screen = "{captures_dir / (new MongoObjectId).id}.png"
-		if site.gen_screencap(screen) then
-			status.screencap = screen
-		end
-		return status
-	end
-end
+import cron
 
 # API Router
 class APIRouter
@@ -112,9 +96,7 @@ class APISites
 	redef fun get(req, res) do
 		var arr = new JsonArray
 		for site in config.sites.find_all do
-			var form = new SiteForm(site.id, site.url, site.name)
-			form.last_status = config.check_site(site)
-			arr.add form
+			arr.add new SiteForm(site.id, site.url, site.name, site.last_status(config))
 		end
 		res.json arr
 	end
@@ -124,6 +106,7 @@ class APISites
 		if form == null then return
 		var site = new Site(form.url, form.name)
 		config.sites.save site
+		config.check_site(site)
 		res.json site
 	end
 end
@@ -152,9 +135,7 @@ class APISite
 	redef fun get(req, res) do
 		var site = get_site(req, res)
 		if site == null then return
-		var form = new SiteForm(site.id, site.url, site.name)
-		form.last_status = config.check_site(site)
-		res.json form
+		res.json new SiteForm(site.id, site.url, site.name, site.last_status(config))
 	end
 
 	redef fun post(req, res) do
@@ -165,14 +146,14 @@ class APISite
 		site.name = form.name
 		site.url = form.url
 		config.sites.save site
-		get(req, res)
+		res.json new SiteForm(site.id, site.url, site.name, site.last_status(config))
 	end
 
 	redef fun delete(req, res) do
 		var site = get_site(req, res)
 		if site == null then return
 		config.sites.remove_by_id(site.id)
-		res.json site
+		res.json new SiteForm(site.id, site.url, site.name, site.last_status(config))
 	end
 end
 

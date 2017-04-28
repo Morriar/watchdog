@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import cron
 import api
 
 var config = new AppConfig
@@ -24,6 +25,8 @@ end
 
 var app = new App
 
+app.tasks.add(new CheckSites(config))
+
 app.use("/api", new APIRouter(config))
 
 app.use("/data", new StaticHandler("data"))
@@ -31,4 +34,5 @@ app.use("/*", new StaticHandler("www", "index.html"))
 
 app.use_after("/*", new ConsoleLog)
 
+app.start_tasks
 app.listen(config.app_host, config.app_port)
