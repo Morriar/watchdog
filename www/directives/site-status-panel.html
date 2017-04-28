@@ -3,10 +3,7 @@
 	"panel-danger": !vm.site.last_status.is_ok
 }'>
 	<div class='panel-heading'>
-		<span class='glyphicon glyphicon-ok'
-			ng-if='vm.site.last_status.is_ok' />
-		<span class='glyphicon glyphicon-remove'
-			ng-if='!vm.site.last_status.is_ok' />
+		<site-status-icon status='vm.site.last_status' />
 		&nbsp;
 		<b>
 			<a ui-sref='site({sId: vm.site.id})' ng-class='{

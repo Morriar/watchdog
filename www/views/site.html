@@ -55,11 +55,7 @@
 				"panel-danger": !status.is_ok
 			}'>
 				<div class='panel-heading'>
-					<span class='glyphicon glyphicon-ok' 
-						ng-if='status.is_ok' />
-					<span class='glyphicon glyphicon-remove' 
-						ng-if='!status.is_ok' />
-					&nbsp;
+					<site-status-icon status='status' />
 					<a data-toggle='collapse' data-target='#{{status._id}}'>
 						<site-status-string status='status' />
 						<span class='text-muted'>

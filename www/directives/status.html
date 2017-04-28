@@ -3,8 +3,7 @@
 		"text-success": vm.status.is_ok,
 		"text-danger": !vm.status.is_ok
 	}'>
-		<span class='glyphicon glyphicon-ok' ng-if='vm.status.is_ok' />
-		<span class='glyphicon glyphicon-remove' ng-if='!vm.status.is_ok' />
+		<site-status-icon status='vm.status' />
 		&nbsp;
 		<site-status-string status='vm.status' />
 	</span>

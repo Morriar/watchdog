@@ -273,6 +273,20 @@
 			};
 		})
 
+		.directive('siteStatusIcon', function () {
+			return {
+				scope: {},
+				bindToController: {
+					status: '='
+				},
+				controller: function() {},
+				controllerAs: 'vm',
+				restrict: 'E',
+				replace: true,
+				templateUrl: '/directives/site-status-icon.html'
+			};
+		})
+
 		.directive('status', function () {
 			return {
 				scope: {},
