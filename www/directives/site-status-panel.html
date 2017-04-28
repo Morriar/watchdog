@@ -1,0 +1,47 @@
+<div class='panel' ng-class='{
+	"panel-success":  vm.site.last_status.is_ok,
+	"panel-danger": !vm.site.last_status.is_ok
+}'>
+	<div class='panel-heading'>
+		<span class='glyphicon glyphicon-ok'
+			ng-if='vm.site.last_status.is_ok' />
+		<span class='glyphicon glyphicon-remove'
+			ng-if='!vm.site.last_status.is_ok' />
+		&nbsp;
+		<b>
+			<a ui-sref='site({sId: vm.site.id})' ng-class='{
+				"text-success": vm.site.last_status.is_ok,
+				"text-danger": !vm.site.last_status.is_ok
+			}'>{{vm.site.name}}</a>
+		</b>
+		<a type='button' class='close text-danger pull-right'
+			ng-click='vm.delete()' title='Delete site'>&times;</a>
+	</div>
+	<div class='panel-body no-padding'>
+		<img style='width:100%'
+			ng-if='vm.site.last_status.screencap'
+			ng-src='/{{vm.site.last_status.screencap}}'
+			title='last check {{ vm.site.last_status.timestamp | date:"longDate" }} {{ vm.site.last_status.timestamp | date:"mediumTime"}}' />
+		<img style='width:100%'
+			ng-if='!vm.site.last_status.screencap'
+			ng-src='images/error.png'
+			title='last check {{ vm.site.last_status.timestamp | date:"longDate" }} {{ vm.site.last_status.timestamp | date:"mediumTime"}}' />
+	</div>
+	<div class='panel-body'>
+		<b ng-class='{
+			"text-success": vm.site.last_status.is_ok,
+			"text-danger": !vm.site.last_status.is_ok
+		}'>
+			{{vm.site.last_status.response_code}}
+			-
+			<span ng-if='vm.site.last_status.response_code < 100'>
+				{{vm.site.last_status.response_body}}
+			</span>
+			<span ng-if='vm.site.last_status.response_code >= 100'>
+				{{vm.translateStatus(vm.site.last_status.response_code)}}
+			</span>
+		</b>
+		<br>
+		<a href='{{vm.site.url}}' class='text-muted'>{{vm.site.url}}</a>
+	</div>
+</div>

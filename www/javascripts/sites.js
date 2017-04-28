@@ -149,7 +149,7 @@
 
 		/* Controllers */
 
-		.controller('SitesCtrl', function(Errors, Sites, sites) {
+		.controller('SitesCtrl', function($scope, Errors, Sites, sites) {
 			var vm = this;
 
 			vm.init = function() {
@@ -166,12 +166,6 @@
 				}, Errors.handleError);
 			}
 
-			vm.removeSite = function(id) {
-				Sites.removeSite(id, function(data) {
-					vm.loadSites();
-				}, Errors.handleError);
-			}
-
 			vm.loadSites = function() {
 				Sites.getSites(function(data) {
 					vm.sites = data;
@@ -181,6 +175,12 @@
 			vm.translateStatus = function(code) {
 				return Sites.code2string[code];
 			}
+
+			$scope.$on('delete-site', function(e, id) {
+				Sites.removeSite(id, function(data) {
+					vm.loadSites();
+				}, Errors.handleError);
+			})
 
 			vm.init();
 			vm.sites = sites;
@@ -228,6 +228,30 @@
 		})
 
 		/* Directives */
+
+		.directive('siteStatusPanel', function () {
+			return {
+				scope: {},
+				bindToController: {
+					site: '='
+				},
+				controller: function($scope, Sites) {
+					var vm = this;
+
+					vm.delete = function() {
+						$scope.$emit('delete-site', vm.site.id);
+					}
+
+					vm.translateStatus = function(code) {
+						return Sites.code2string[code];
+					}
+				},
+				controllerAs: 'vm',
+				restrict: 'E',
+				replace: true,
+				templateUrl: '/directives/site-status-panel.html'
+			};
+		})
 
 		.directive('status', function () {
 			return {
