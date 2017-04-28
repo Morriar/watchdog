@@ -74,6 +74,31 @@
 		};
 	})
 
+	.directive('uiAlerts', ['$rootScope', function($rootScope) {
+		return {
+			restrict: 'E',
+			replace: true,
+			controller: function($scope) {
+				var vm = this;
+				vm.alerts = [];
+
+				$rootScope.$on('alert', function(e, alert) {
+					vm.alerts.push(alert);
+				});
+
+				vm.refresh = function() {
+					vm.alerts.shift();
+					$scope.$apply();
+					setTimeout(vm.refresh, 3000);
+				}
+
+				setTimeout(vm.refresh, 3000);
+			},
+			controllerAs: 'vm',
+			templateUrl: '/directives/ui/alerts.html',
+		};
+	}])
+
 	.directive('uiPagination', function() {
 		return {
 			restrict: 'E',

@@ -169,12 +169,14 @@
 				Sites.createSite(site, function(data) {
 					vm.init();
 					vm.loadSites();
+					$scope.$emit('alert', {status: 'success', message: 'Site created'})
 				}, Errors.handleError);
 			})
 
 			$scope.$on('delete-site', function(e, id) {
 				Sites.removeSite(id, function(data) {
 					vm.loadSites();
+					$scope.$emit('alert', {status: 'success', message: 'Site deleted'})
 				}, Errors.handleError);
 			})
 
@@ -190,6 +192,7 @@
 
 			vm.removeSite = function() {
 				Sites.removeSite(vm.site.id, function(data) {
+					$scope.$emit('alert', {status: 'success', message: 'Site deleted'})
 					$state.go('home');
 				}, Errors.handleError);
 			}
@@ -207,6 +210,7 @@
 				Sites.editSite(site.id, site, function(data) {
 					vm.site = data;
 					vm.edit = false;
+					$scope.$emit('alert', {status: 'success', message: 'Site saved'})
 				}, Errors.handleError);
 			})
 
