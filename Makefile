@@ -24,3 +24,14 @@ app:
 
 run:
 	./bin/watchdog_app
+
+run-nohup:
+	@make run >> app.log 2>&1 & echo $$! > app.pid && echo "App started"
+
+start:
+	@if [ -f app.pid ]; then echo "App already running (pid `cat app.pid`)"; fi
+	@if [ ! -f app.pid ]; then make --no-print-directory run-nohup; fi
+
+stop:
+	@if [ ! -f app.pid ]; then echo "App not running"; fi
+	@if [ -f app.pid ]; then kill -9 `cat app.pid` && rm app.pid && echo "App stopped"; fi
