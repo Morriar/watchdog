@@ -172,9 +172,6 @@
 				}, Errors.handleError);
 			}
 
-			vm.translateStatus = function(code) {
-				return Sites.code2string[code];
-			}
 
 			$scope.$on('delete-site', function(e, id) {
 				Sites.removeSite(id, function(data) {
@@ -205,9 +202,6 @@
 				}, Errors.handleError);
 			}
 
-			vm.translateStatus = function(code) {
-				return Sites.code2string[code];
-			}
 
 			vm.loadPage = function(page, limit) {
 				Sites.getStatuses(vm.site.id, page, limit,
@@ -229,21 +223,38 @@
 
 		/* Directives */
 
+		.directive('siteForm', function () {
+			return {
+				scope: {},
+				bindToController: {
+					new: '=',
+					site: '='
+				},
+				controller: function($scope) {
+					var vm = this;
+
+					vm.submit = function() {
+						$scope.$emit('submit-site', vm.site);
+					}
+				},
+				controllerAs: 'vm',
+				restrict: 'E',
+				replace: true,
+				templateUrl: '/directives/site-form.html'
+			};
+		})
+
 		.directive('siteStatusPanel', function () {
 			return {
 				scope: {},
 				bindToController: {
 					site: '='
 				},
-				controller: function($scope, Sites) {
+				controller: function($scope) {
 					var vm = this;
 
 					vm.delete = function() {
 						$scope.$emit('delete-site', vm.site.id);
-					}
-
-					vm.translateStatus = function(code) {
-						return Sites.code2string[code];
 					}
 				},
 				controllerAs: 'vm',
@@ -307,11 +318,7 @@
 				bindToController: {
 					status: '='
 				},
-				controller: function(Sites) {
-					this.translateStatus = function(code) {
-						return Sites.code2string[code];
-					}
-				},
+				controller: function() {},
 				controllerAs: 'vm',
 				restrict: 'E',
 				replace: true,
