@@ -1,33 +1,5 @@
 <div class='container-fluid'>
-	<form ng-submit='vm.createSite()'>
-		<div class='container-fluid'>
-			<div class='col-xs-4'>
-				<div class='input-group' style='width: 100%;'>
-					<span class='input-group-addon'>
-						<span class='glyphicon glyphicon-tag' />
-					</span>
-					<input id='sitename' type='text' class='form-control'
-						ng-model='vm.site.name' placeholder='label' />
-				</div>
-			</div>
-
-			<div class='col-xs-7'>
-				<div class='input-group col-xs-7' style='width: 100%;'>
-					<span class='input-group-addon'>
-						<span class='glyphicon glyphicon-link' />
-					</span>
-					<input id='url' type='text' class='form-control'
-						ng-model='vm.site.url' placeholder='http://example.com' />
-				</div>
-			</div>
-
-			<div class='col-xs-1 text-right'>
-				<button class='btn btn-success' type='submit'>
-					<span class='glyphicon glyphicon-plus' />
-				</button>
-			</div>
-		</div>
-	</form>
+	<site-form site='vm.site' new='true' />
 	<br><br>
 	<div ng-if='vm.sites && vm.sites.length > 0' class='container-fluid'>
 		<div class='col-xs-4' ng-repeat='site in vm.sites'>

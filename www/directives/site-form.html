@@ -1,0 +1,30 @@
+<form ng-submit='vm.submit()'>
+	<div class='container-fluid'>
+		<div class='col-xs-4'>
+			<div class='input-group' style='width: 100%;'>
+				<span class='input-group-addon'>
+					<span class='glyphicon glyphicon-tag' />
+				</span>
+				<input id='sitename' type='text' class='form-control'
+					ng-model='vm.site.name' placeholder='label' />
+			</div>
+		</div>
+
+		<div class='col-xs-7'>
+			<div class='input-group col-xs-7' style='width: 100%;'>
+				<span class='input-group-addon'>
+					<span class='glyphicon glyphicon-link' />
+				</span>
+				<input id='url' type='text' class='form-control'
+					ng-model='vm.site.url' placeholder='http://example.com' />
+			</div>
+		</div>
+
+		<div class='col-xs-1 text-right'>
+			<button class='btn btn-success' type='submit'>
+				<span ng-if='vm.new' class='glyphicon glyphicon-plus' />
+				<span ng-if='!vm.new' class='glyphicon glyphicon-floppy-disk' />
+			</button>
+		</div>
+	</div>
+</form>

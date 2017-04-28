@@ -159,19 +159,18 @@
 				}
 			}
 
-			vm.createSite = function() {
-				Sites.createSite(vm.site, function(data) {
-					vm.init();
-					vm.loadSites();
-				}, Errors.handleError);
-			}
-
 			vm.loadSites = function() {
 				Sites.getSites(function(data) {
 					vm.sites = data;
 				}, Errors.handleError);
 			}
 
+			$scope.$on('submit-site', function(e, site) {
+				Sites.createSite(site, function(data) {
+					vm.init();
+					vm.loadSites();
+				}, Errors.handleError);
+			})
 
 			$scope.$on('delete-site', function(e, id) {
 				Sites.removeSite(id, function(data) {
@@ -189,19 +188,11 @@
 			vm.page = $stateParams.p ? $stateParams.p : 1;
 			vm.limit = $stateParams.l ? $stateParams.l : 20;
 
-			vm.editSite = function() {
-				Sites.editSite(vm.site.id, vm.site, function(data) {
-					vm.site = data;
-					vm.edit = false;
-				}, Errors.handleError);
-			}
-
 			vm.removeSite = function() {
 				Sites.removeSite(vm.site.id, function(data) {
 					$state.go('home');
 				}, Errors.handleError);
 			}
-
 
 			vm.loadPage = function(page, limit) {
 				Sites.getStatuses(vm.site.id, page, limit,
@@ -211,6 +202,13 @@
 						vm.error = err;
 					});
 			}
+
+			$scope.$on('submit-site', function(e, site) {
+				Sites.editSite(site.id, site, function(data) {
+					vm.site = data;
+					vm.edit = false;
+				}, Errors.handleError);
+			})
 
 			$scope.$on('change-page', function(e, page, limit) {
 				vm.loadPage(page, limit);
