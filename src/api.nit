@@ -165,7 +165,7 @@ class APISite
 		site.name = form.name
 		site.url = form.url
 		config.sites.save site
-		res.json site
+		get(req, res)
 	end
 
 	redef fun delete(req, res) do
