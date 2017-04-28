@@ -16,6 +16,7 @@
 module api
 
 import popcorn
+import popcorn::pop_validation
 import cron
 
 # API Router
@@ -58,6 +59,25 @@ abstract class APIHandler
 		return form
 	end
 
+	# Json validator used to validate POST/PUT inputs
+	#
+	# See `validate`
+	fun validator: ObjectValidator is abstract
+
+	# Validate POST input with `validator`
+	#
+	# * Returns the validated string input is the result of the validation is ok.
+	# * Sets `api_error` and returns `null` if something went wrong.
+	fun validate(req: HttpRequest, res: HttpResponse): nullable String do
+		var body = req.body
+		if not validator.validate(body) then
+			print validator.validation.to_json
+			res.json_error(validator.validation, 400)
+			return null
+		end
+		return body
+	end
+
 	# Paginate results
 	fun paginate(results: JsonArray, page, limit: nullable Int): JsonObject do
 		if page == null or page <= 0 then page = 1
@@ -93,6 +113,8 @@ end
 class APISites
 	super APIHandler
 
+	redef var validator is lazy do return new SiteValidator
+
 	redef fun get(req, res) do
 		var arr = new JsonArray
 		for site in config.sites.find_all do
@@ -102,6 +124,8 @@ class APISites
 	end
 
 	redef fun post(req, res) do
+		var post = validate(req, res)
+		if post == null then return
 		var form = deserialize_site(req, res)
 		if form == null then return
 		var site = new Site(form.url, form.name)
@@ -116,6 +140,8 @@ end
 # GET: get the site for `siteid`
 class APISite
 	super APIHandler
+
+	redef var validator is lazy do return new SiteValidator
 
 	# Get the site for `:siteid`
 	fun get_site(req: HttpRequest, res: HttpResponse): nullable Site do
@@ -141,6 +167,8 @@ class APISite
 	redef fun post(req, res) do
 		var site = get_site(req, res)
 		if site == null then return
+		var post = validate(req, res)
+		if post == null then return
 		var form = deserialize_site(req, res)
 		if form == null then return
 		site.name = form.name
@@ -230,6 +258,16 @@ class SiteForm
 	var last_status: nullable Status
 end
 
+# Validate a SiteForm input
+class SiteValidator
+	super ObjectValidator
+
+	redef init do
+		add new StringField("name", required=true, min_size=1)
+		add new URLField("url", required=true)
+	end
+end
+
 redef class HttpResponse
 
 	# Return an api error as a json object
@@ -239,4 +277,34 @@ redef class HttpResponse
 		obj["message"] = message
 		json(obj, status)
 	end
+end
+
+redef class ValidationResult
+	redef fun core_serialize_to(v) do
+		v.serialize_attribute("has_error", has_error)
+		v.serialize_attribute("errors", errors)
+	end
+end
+
+# Check if a field is a valid URL
+#
+# ~~~
+# var validator = new ObjectValidator
+# validator.add new URLField("url")
+# assert not validator.validate("""{ "url": "" }""")
+# assert not validator.validate("""{ "url": "foo" }""")
+# assert not validator.validate("""{ "url": "http://foo" }""")
+# assert validator.validate("""{ "url": "http://nitlanguage.org" }""")
+# assert validator.validate("""{ "url": "http://nitlanguage.org/foo" }""")
+# assert validator.validate("""{ "url": "http://nitlanguage.org/foo?q" }""")
+# assert validator.validate("""{ "url": "http://nitlanguage.org/foo?q&a" }""")
+# assert validator.validate("""{ "url": "http://nitlanguage.org/foo?q&a=1" }""")
+# ~~~
+class URLField
+	super RegexField
+
+	autoinit field, required
+
+	# redef var re = "(http|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?".to_re
+	redef var re = "^(http|https):\\/\\/[a-zA-Z0-9\\-_]+(\\.[a-zA-Z0-9\\-_]+)+([a-zA-Z0-9\\-\\.,@?^=%&amp;:/~\\+#]*[a-zA-Z0-9\\-\\@?^=%&amp;/~\\+#])?".to_re
 end
