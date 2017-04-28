@@ -91,7 +91,7 @@ class Site
 
 	# Gen a screencapture and return its id or null if the url cannot be reached
 	fun gen_screencap(path: String): Bool do
-		return sys.system("phantomjs src/screencap.js \"{url}\" \"{path}\"").to_i == 0
+		return sys.system("phantomjs src/screencap.js \"{url}\" \"{path}\" > /dev/null 2>&1 ").to_i == 0
 	end
 
 	redef fun to_s do return url
