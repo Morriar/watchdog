@@ -287,6 +287,20 @@
 			};
 		})
 
+		.directive('siteStatusScreen', function () {
+			return {
+				scope: {},
+				bindToController: {
+					status: '='
+				},
+				controller: function() {},
+				controllerAs: 'vm',
+				restrict: 'E',
+				replace: true,
+				templateUrl: '/directives/site-status-screen.html'
+			};
+		})
+
 		.directive('status', function () {
 			return {
 				scope: {},
