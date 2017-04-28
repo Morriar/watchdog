@@ -33,12 +33,6 @@
 							Sites.getSite($stateParams.sId, d.resolve, function() {
 								d.resolve()});
 							return d.promise;
-						},
-						status: function(Sites, $q, $stateParams) {
-							var d = $q.defer();
-							Sites.getStatuses($stateParams.sId, 1, 20, d.resolve, function() {
-								d.resolve()});
-							return d.promise;
 						}
 					},
 					controller: 'SiteCtrl',
@@ -190,7 +184,7 @@
 			vm.sites = sites;
 		})
 
-		.controller('SiteCtrl', function($stateParams, $scope, $state, Errors, Sites, site, status) {
+		.controller('SiteCtrl', function($stateParams, $scope, $state, Errors, Sites, site) {
 			var vm = this;
 
 			vm.page = $stateParams.p ? $stateParams.p : 1;
@@ -230,7 +224,7 @@
 			})
 
 			vm.site = site;
-			vm.status = status;
+			vm.loadPage(1, 20);
 			vm.loadTimeline();
 			vm.edit = false;
 		})
