@@ -21,9 +21,13 @@ redef class AppConfig
 	var opt_screencap = new OptionString("Take a screen capture and save it under the given name",
 		"-s", "--screencap")
 
+	# --timeout
+	var opt_timeout = new OptionInt("Check site within an infinite loop with the given timeout in seconds",
+		0, "-t", "--timeout")
+
 	redef init do
 		super
-		add_option(opt_screencap)
+		add_option(opt_screencap, opt_timeout)
 	end
 end
 
@@ -37,21 +41,31 @@ end
 
 var site = new Site(config.args.first)
 
-print "Checking {site.url}\n"
 
-var status = site.check_status(config)
-var screencap = config.opt_screencap.value
-if screencap != null then
-	if not site.gen_screencap(screencap) then
-		print "Error generating screencap"
-	else
-		status.screencap = screencap
+var timeout = config.opt_timeout.value
+if timeout > 0 then
+	print "Checking {site.url} every {timeout} seconds"
+	loop
+		var status = site.check_status(config)
+		print " {status.response_code} - took {status.response_time}s"
+		timeout.to_f.sleep
 	end
-end
+else
+	print "Checking {site.url}\n"
+	var status = site.check_status(config)
+	var screencap = config.opt_screencap.value
+	if screencap != null then
+		if not site.gen_screencap(screencap) then
+			print "Error generating screencap"
+		else
+			status.screencap = screencap
+		end
+	end
 
-print "Response code: {status.response_code}"
-print "Response time: {status.response_time}s"
-print "Response body: {status.response_body}"
-if status.screencap != null then
-	print "Screen capture generated to {status.screencap.as(not null)}"
+	print "Response code: {status.response_code}"
+	print "Response time: {status.response_time}s"
+	print "Response body: {status.response_body}"
+	if status.screencap != null then
+		print "Screen capture generated to {status.screencap.as(not null)}"
+	end
 end
