@@ -56,12 +56,10 @@ class Site
 	end
 
 	# Get the last status for `self`
-	fun last_status(config: AppConfig): Status do
+	fun last_status(config: AppConfig): nullable Status do
 		var status = status(config)
-		if status.is_empty then
-			return check_status(config)
-		end
-		return status.last
+		if status.is_empty then return null
+		return status.first
 	end
 
 	# Check the site status
@@ -79,9 +77,7 @@ class Site
 			code = res.error_code
 			body = res.error_msg
 		end
-		var status = new Status(id, time, code, body)
-		config.status.save status
-		return status
+		return new Status(id, time, code, body)
 	end
 
 	private fun send_request: CurlResponse do
