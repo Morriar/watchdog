@@ -19,7 +19,13 @@
 
 	<status status='vm.site.last_status' />
 	<br>
-	<div ng-if='vm.status && vm.status.results.length > 0'>
+	<div>
+		<h3>Response time</h3>
+		<div class='text-center'>
+			<timegraph timeline='vm.timeline' />
+		</div>
+	</div>
+	<div ng-if='vm.status'>
 		<h3>Previous status</h3>
 		<div class='panel-group'>
 			<div class='panel panel-default' ng-repeat='status in vm.status.results' ng-class='{

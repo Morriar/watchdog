@@ -81,6 +81,11 @@
 						.success(cb)
 						.error(cbErr);
 				},
+				getTimeline: function(id, p, n, cb, cbErr) {
+					$http.get(apiUrl + '/sites/' + id + '/timeline?p=' + p + '&n=' + n)
+						.success(cb)
+						.error(cbErr);
+				},
 				code2string: {
 					100: 'Continue',
 					101: 'Switching Protocols',
@@ -205,6 +210,12 @@
 					}, Errors.handleError);
 			}
 
+			vm.loadTimeline = function() {
+				Sites.getTimeline(site.id, 1, 20, function(data) {
+					vm.timeline = data;
+				}, Errors.handleError);
+			}
+
 			$scope.$on('submit-site', function(e, site) {
 				Sites.editSite(site.id, site, function(data) {
 					vm.error = null;
@@ -220,6 +231,7 @@
 
 			vm.site = site;
 			vm.status = status;
+			vm.loadTimeline();
 			vm.edit = false;
 		})
 
@@ -327,6 +339,159 @@
 				replace: true,
 				templateUrl: '/directives/status.html'
 			};
+		})
+
+		.directive('timegraph', function($filter) {
+			return {
+				scope: {},
+				bindToController: {
+					timeline: '='
+				},
+				controller: function() {},
+				link: function($scope, $element) {
+					$scope.$watch('vm.timeline', function(timeline) {
+						if(!timeline) return;
+						update(timeline);
+					})
+
+					var update = function(data) {
+						// Set the dimensions of the canvas / graph
+						var margin = {top: 30, right: 20, bottom: 30, left: 50},
+							width = 600 - margin.left - margin.right,
+							height = 270 - margin.top - margin.bottom;
+
+						// Set the ranges
+						var x = d3.time.scale().range([0, width]);
+						var y = d3.scale.linear().range([height, 0]);
+
+						var bisectDate = d3.bisector(function(d) { return -d.date; }).left;
+
+						// Define the axes
+						var xAxis = d3.svg.axis().scale(x)
+							.orient("bottom").ticks(5)
+							.tickFormat(function(d) { return d3.time.format("%H:%M")(d); });
+
+						var yAxis = d3.svg.axis().scale(y)
+							.orient("left").ticks(5)
+							.innerTickSize(-width)
+							.outerTickSize(0)
+							.tickFormat(function(d) { return d + " ms"; });
+
+						// Define the line
+						var valueline = d3.svg.line()
+							.interpolate("monotone")
+							.x(function(d) { return x(d.date); })
+							.y(function(d) { return y(d.time); });
+
+						var area = d3.svg.area()
+							.interpolate("monotone")
+							.x(function(d) { return x(d.date); })
+							.y0(function(d) { return height; })
+							.y1(function(d) { return y(d.time); });
+
+						// Adds the svg canvas
+						var svg = d3.select($element[0])
+							.append("svg")
+								.attr("width", width + margin.left + margin.right)
+								.attr("height", height + margin.top + margin.bottom)
+							.append("g")
+								.attr("transform",
+									  "translate(" + margin.left + "," + margin.top + ")");
+
+						// Define the div for the tooltip
+						var div = d3.select("body").append("div")
+							.attr("class", "tooltip")
+							.style("opacity", 0);
+
+						// Get the data
+						data.forEach(function(d) {
+							d.date = new Date(d.timestamp);
+						});
+
+						// Scale the range of the data
+						x.domain(d3.extent(data, function(d) { return d.date; }));
+						y.domain([0, d3.max(data, function(d) { return d.time; })]);
+
+						// Add the X Axis
+						svg.append("g")
+							.attr("class", "x axis")
+							.attr("transform", "translate(0," + height + ")")
+							.call(xAxis);
+
+						// Add the Y Axis
+						svg.append("g")
+							.attr("class", "y axis")
+							.call(yAxis);
+
+						// Add the valueline path.
+						svg.append("path")
+							.attr("class", "line")
+							.attr("d", valueline(data));
+
+						// Add the valueline path.
+						svg.append("path")
+							.attr("class", "area")
+							.attr("d", area(data));
+
+						// Add the scatterplot
+						svg.selectAll("dot")
+							.data(data)
+							.enter().append("circle")
+							.attr("r", 3.5)
+							.attr("cx", function(d) { return x(d.timestamp); })
+							.attr("cy", function(d) { return y(d.time); });
+
+						var focus = svg.append('g').style('display', 'none');
+						focus.append('line')
+							.attr('id', 'focusLineX')
+							.attr('class', 'focus-line');
+						focus.append('circle')
+							.attr('id', 'focusCircle')
+							.attr('r', 3.5)
+							.attr('class', 'focus-circle');
+
+						svg.append('rect')
+							.attr('class', 'overlay')
+							.attr('width', width)
+							.attr('height', height)
+							.on('mouseover', function() { focus.style('display', null); })
+							.on('mousemove', function() {
+								var mouse = d3.mouse(this);
+								var mouseDate = x.invert(mouse[0]);
+								var i = bisectDate(data, -mouseDate);
+								var d0 = data[i + 1];
+								var d1 = data[i];
+								var d = mouseDate - d0.date > d1.date - mouseDate ? d1 : d0;
+
+								var x0 = x(d.date);
+								var y0 = y(d.time);
+
+								focus.select('#focusCircle')
+									.attr('cx', x0)
+									.attr('cy', y0);
+								focus.select('#focusLineX')
+									.attr('x1', x0).attr('y1', height)
+									.attr('x2', x0).attr('y2', y0);
+
+								div.style("opacity", .9);
+								div.html(
+									'<b>' + d.time + ' ms</b><br>' +
+									$filter('date')(d.date, "HH:mm")
+								)
+								.style("left", ($element[0].offsetLeft + x0 + 10) + "px")
+								.style("top", ($element[0].offsetTop + y0 - 19) + "px");
+							})
+							.on('mouseout', function() {
+								focus.style('display', 'none');
+								div.style("opacity", 0);
+							})
+					}
+				},
+				controllerAs: 'vm',
+				restrict: 'E',
+				replace: true,
+				template: ''
+			}
 		})
 
 })();
