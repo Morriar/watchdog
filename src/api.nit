@@ -80,23 +80,23 @@ abstract class APIHandler
 	end
 
 	# Paginate results
-	fun paginate(results: JsonArray, page, limit: nullable Int): JsonObject do
+	fun paginate(results: JsonArray, count: Int, page, limit: nullable Int): JsonObject do
 		if page == null or page <= 0 then page = 1
 		if limit == null or limit <= 0 then limit = 20
 
-		var max = (results.length / limit) + 1
-		if page > max then page = 1
+		var max = count / limit
+		if page > max then page = max
 
 		var lstart = (page - 1) * limit
 		var lend = limit
-		if lstart + lend > results.length then lend = results.length - lstart
+		if lstart + lend > count then lend = count - lstart
 
 		var res = new JsonObject
 		res["page"] = page
 		res["limit"] = limit
-		res["results"] = new JsonArray.from(results.subarray(lstart, lend))
+		res["results"] = results
 		res["max"] = max
-		res["total"] = results.length
+		res["total"] = count
 		return res
 	end
 end
@@ -217,10 +217,13 @@ class APIStatuses
 	redef fun get(req, res) do
 		var page = req.int_arg("p")
 		var limit = req.int_arg("n")
+		var skip = null
+		if page != null and limit != null then skip = page * limit
 		var site = get_site(req, res)
 		if site == null then return
-		var arr = new JsonArray.from(site.status(config))
-		res.json paginate(arr, page, limit)
+		var results = new JsonArray.from(site.status(config, skip, limit))
+		var count = site.count_status(config)
+		res.json paginate(results, count, page, limit)
 	end
 
 	redef fun post(req, res) do

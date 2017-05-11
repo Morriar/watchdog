@@ -53,6 +53,11 @@ class Site
 		return config.status.find_by_site(self, s, l)
 	end
 
+	# Count all the statuses for `self`
+	fun count_status(config: AppConfig): Int do
+		return config.status.count_by_site(self)
+	end
+
 	# Get the last status for `self`
 	fun last_status(config: AppConfig): nullable Status do
 		return config.status.last_by_site(self)
@@ -151,6 +156,11 @@ class StatusRepo
 	# Find all status for `site`
 	fun find_by_site(site: Site, s, l: nullable Int): Array[Status] do
 		return find_all((new MongoMatch).eq("site", site.id), s, l)
+	end
+
+	# Count all status for `site`
+	fun count_by_site(site: Site): Int do
+		return count((new MongoMatch).eq("site", site.id))
 	end
 
 	# Find last status for `site`
