@@ -15,7 +15,7 @@
  */
 
 (function() {
-	angular.module('ng-app', ['ui.router', 'angular-loading-bar', 'sites'])
+	angular.module('ng-app', ['ui.router', 'angular-loading-bar', 'auth', 'users', 'sites'])
 
 	/* Config */
 
@@ -35,7 +35,15 @@
 			.state({
 				name: 'root',
 				abstract: true,
-				controller: function() {
+				resolve: {
+					session: function(Errors, Auth, $q) {
+						var d = $q.defer();
+						Auth.auth(d.resolve, function () { d.resolve(null) });
+						return d.promise;
+					}
+				},
+				controller: function(session) {
+					this.session = session;
 				},
 				controllerAs: 'vm',
 				templateUrl: '/views/root.html'

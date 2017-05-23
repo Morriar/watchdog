@@ -1,0 +1,32 @@
+<div class='container-fluid'>
+	<div class='col-xs-3'></div>
+	<div class='col-xs-6' style='padding: 0 50px;'>
+		<div class='text-center'>
+			<h1>
+				<a ui-sref='root.home' style='color: inherit;'>
+					<span class='glyphicon glyphicon-eye-open' />
+				</a>
+			</h1>
+			<h2>Email activation</h2>
+			<br>
+		</div>
+		<div class='panel panel-default' ng-if='vm.status == "success"'>
+			<div class='panel-body'>
+				Your email has been successfully validated.
+				<br>
+				<br>
+				<a class='btn btn-default' style='width: 100%' ui-sref='root.home'>
+					Return to homepage</a>
+			</div>
+		</div>
+		<div class='panel panel-default' ng-if='vm.status != "success"'>
+			<div class='panel-body'>
+				<span class='text-danger'>An error occured during the email activation process.</span>
+				<br>
+				<br>
+				<a class='btn btn-default' style='width: 100%' ui-sref='root.home'>
+					Return to homepage</a>
+			</div>
+		</div>
+	</div>
+</div>

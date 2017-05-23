@@ -1,0 +1,21 @@
+<ul class='nav navbar-nav navbar-right'>
+	<li ng-if='!vm.session'>
+		<a ui-sref='auth.signup'>Sign up</a>
+	</li>
+	<li ng-if='!vm.session'>
+		<a ui-sref='auth.signin'>Sign in</a>
+	</li>
+	<li class='dropdown' ng-if='vm.session'>
+		<a class='btn btn-link dropdown-toggle' type='button' data-toggle='dropdown'>
+			{{vm.session.login}}
+		</a>
+		<ul class='dropdown-menu dropdown-menu-right'>
+			<li>
+				<a ui-sref='auth.signout'>
+					<span class='glyphicon glyphicon-log-out' />&nbsp;&nbsp;
+					Sign out
+				</a>
+			</li>
+		</ul>
+	</li>
+</ul>
