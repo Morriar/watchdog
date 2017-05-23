@@ -54,7 +54,7 @@ class APISites
 	end
 
 	redef fun post(req, res) do
-		var post = validate(req, res)
+		var post = validate_body(req, res)
 		if post == null then return
 		var form = deserialize_body(req, res)
 		if form == null then return
@@ -99,7 +99,7 @@ class APISite
 	redef fun post(req, res) do
 		var site = get_site(req, res)
 		if site == null then return
-		var post = validate(req, res)
+		var post = validate_body(req, res)
 		if post == null then return
 		var form = deserialize_body(req, res)
 		if form == null then return

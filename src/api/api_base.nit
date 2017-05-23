@@ -20,49 +20,7 @@ import popcorn::pop_validation
 
 # A basic API handler
 abstract class APIHandler
-	super Handler
-
-	# Kind of objects returned by `deserialize_body`.
-	type BODY: Serializable
-
-	# App config
-	var config: AppConfig
-
-	# Deserialize the request body
-	fun deserialize_body(req: HttpRequest, res: HttpResponse): nullable BODY do
-		var post = req.body
-		var deserializer = new JsonDeserializer(post)
-		var form = new_body_object(deserializer)
-		if not deserializer.errors.is_empty then
-			res.api_error("Cannot process request body", 400)
-			# print deserializer.errors.join("\n")
-			# print post.write_to_string
-			return null
-		end
-		return form
-	end
-
-	# Create a new `BODY` object from a deserializer
-	fun new_body_object(deserializer: JsonDeserializer): BODY is abstract
-
-	# Json validator used to validate POST/PUT inputs
-	#
-	# See `validate`
-	fun validator: ObjectValidator is abstract
-
-	# Validate POST input with `validator`
-	#
-	# * Returns the validated string input is the result of the validation is ok.
-	# * Sends HTTP 400 and returns `null` if something went wrong.
-	fun validate(req: HttpRequest, res: HttpResponse): nullable String do
-		var body = req.body
-		if not validator.validate(body) then
-			res.json(validator.validation, 400)
-			# print validator.validation.to_json
-			return null
-		end
-		return body
-	end
+	super UserHandler
 
 	# Paginate results
 	fun paginate(results: JsonArray, count: Int, page, limit: nullable Int): JsonObject do
