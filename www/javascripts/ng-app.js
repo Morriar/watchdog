@@ -92,9 +92,10 @@
 
 	.directive('uiAlerts', ['$rootScope', function($rootScope) {
 		return {
+			scope: {},
 			restrict: 'E',
 			replace: true,
-			controller: function($scope) {
+			controller: function() {
 				var vm = this;
 				vm.alerts = [];
 
@@ -104,7 +105,7 @@
 
 				vm.refresh = function() {
 					vm.alerts.shift();
-					$scope.$apply();
+					$rootScope.$apply();
 					setTimeout(vm.refresh, 3000);
 				}
 
