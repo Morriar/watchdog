@@ -309,26 +309,3 @@ redef class ValidationResult
 		v.serialize_attribute("errors", errors)
 	end
 end
-
-# Check if a field is a valid URL
-#
-# ~~~
-# var validator = new ObjectValidator
-# validator.add new URLField("url")
-# assert not validator.validate("""{ "url": "" }""")
-# assert not validator.validate("""{ "url": "foo" }""")
-# assert not validator.validate("""{ "url": "http://foo" }""")
-# assert validator.validate("""{ "url": "http://nitlanguage.org" }""")
-# assert validator.validate("""{ "url": "http://nitlanguage.org/foo" }""")
-# assert validator.validate("""{ "url": "http://nitlanguage.org/foo?q" }""")
-# assert validator.validate("""{ "url": "http://nitlanguage.org/foo?q&a" }""")
-# assert validator.validate("""{ "url": "http://nitlanguage.org/foo?q&a=1" }""")
-# ~~~
-class URLField
-	super RegexField
-
-	autoinit field, required
-
-	# redef var re = "(http|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?".to_re
-	redef var re = "^(http|https):\\/\\/[a-zA-Z0-9\\-_]+(\\.[a-zA-Z0-9\\-_]+)+([a-zA-Z0-9\\-\\.,@?^=%&amp;:/~\\+#]*[a-zA-Z0-9\\-\\@?^=%&amp;/~\\+#])?".to_re
-end
