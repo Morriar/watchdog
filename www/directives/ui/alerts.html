@@ -1,7 +1,7 @@
-<p class='navbar-text' ng-if='vm.alerts.length > 0'>
-	<span class='text-{{vm.alerts[0].status}}'>
+<h4 class='navbar-text'>
+	<span class='label label-{{vm.alerts[0].status}}' ng-if='vm.alerts.length > 0'>
 		<span class='glyphicon glyphicon-ok' ng-if='vm.alerts[0].status == "success"' />
 		<span class='glyphicon glyphicon-remove' ng-if='vm.alerts[0].status != "success"' />
-		<strong>{{vm.alerts[0].message}}</strong>
+		&nbsp;<strong>{{vm.alerts[0].message}}</strong>
 	</span>
-</p>
+</h4>
