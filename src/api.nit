@@ -73,7 +73,7 @@ abstract class APIHandler
 		var body = req.body
 		if not validator.validate(body) then
 			print validator.validation.to_json
-			res.json_error(validator.validation, 400)
+			res.json(validator.validation, 400)
 			return null
 		end
 		return body
