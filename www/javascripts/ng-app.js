@@ -153,4 +153,13 @@
 			templateUrl: 'directives/pagination.html'
 		};
 	})
+
+	.directive('footer', function() {
+		return {
+			scope: {},
+			templateUrl: '/directives/ui/footer.html',
+			restrict: 'E',
+			replace: true
+		};
+	})
 })();
