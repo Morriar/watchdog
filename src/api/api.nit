@@ -14,6 +14,7 @@
 
 module api
 
+import api_users
 import api_sites
 
 # API Router
@@ -26,6 +27,7 @@ class APIRouter
 	redef init do
 		super
 		use("/auth", new AuthBasicRouter(config))
+		use("/user", new APIUsersRouter(config))
 		use("/sites", new APISitesRouter(config))
 		use("/*", new APIErrorHandler(config))
 	end
