@@ -37,7 +37,6 @@ var app = new App
 app.tasks.add(new CheckSites(config))
 
 app.use_before("/*", new SessionInit)
-app.use("/api/auth", new AuthBasicRouter(config))
 app.use("/api", new APIRouter(config))
 app.use("/data", new StaticHandler("data"))
 app.use("/*", new StaticHandler("www", "index.html"))

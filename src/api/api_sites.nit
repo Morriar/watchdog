@@ -13,14 +13,13 @@
 # limitations under the License.
 
 # Serve model as a REST api
-module api
+module api_sites
 
-import popcorn
-import popcorn::pop_validation
+import api_base
 import cron
 
-# API Router
-class APIRouter
+# API Sites Router
+class APISitesRouter
 	super Router
 
 	# App config
@@ -28,84 +27,12 @@ class APIRouter
 
 	redef init do
 		super
-		use("/sites", new APISites(config))
-		use("/sites/:siteid", new APISite(config))
-		use("/sites/:siteid/timeline", new APISiteTimeline(config))
-		use("/sites/:siteid/status", new APIStatuses(config))
-		use("/sites/:siteid/status/:statusid", new APIStatus(config))
-
-		use("/*", new APIErrorHandler(config))
+		use("/", new APISites(config))
+		use("/:siteid", new APISite(config))
+		use("/:siteid/timeline", new APISiteTimeline(config))
+		use("/:siteid/status", new APIStatuses(config))
+		use("/:siteid/status/:statusid", new APIStatus(config))
 	end
-end
-
-# A basic API handler
-abstract class APIHandler
-	super Handler
-
-	# App config
-	var config: AppConfig
-
-	# Deserialize a site form
-	fun deserialize_site(req: HttpRequest, res: HttpResponse): nullable SiteForm do
-		var post = req.body
-		var deserializer = new JsonDeserializer(post)
-		var form = new SiteForm.from_deserializer(deserializer)
-		if not deserializer.errors.is_empty then
-			res.error 400
-			print "Error deserializing site"
-			print deserializer.errors.join("\n")
-			print post.write_to_string
-			return null
-		end
-		return form
-	end
-
-	# Json validator used to validate POST/PUT inputs
-	#
-	# See `validate`
-	fun validator: ObjectValidator is abstract
-
-	# Validate POST input with `validator`
-	#
-	# * Returns the validated string input is the result of the validation is ok.
-	# * Sets `api_error` and returns `null` if something went wrong.
-	fun validate(req: HttpRequest, res: HttpResponse): nullable String do
-		var body = req.body
-		if not validator.validate(body) then
-			print validator.validation.to_json
-			res.json(validator.validation, 400)
-			return null
-		end
-		return body
-	end
-
-	# Paginate results
-	fun paginate(results: JsonArray, count: Int, page, limit: nullable Int): JsonObject do
-		if page == null or page <= 0 then page = 1
-		if limit == null or limit <= 0 then limit = 20
-
-		var max = count / limit
-		if page > max then page = max
-
-		var lstart = (page - 1) * limit
-		var lend = limit
-		if lstart + lend > count then lend = count - lstart
-
-		var res = new JsonObject
-		res["page"] = page
-		res["limit"] = limit
-		res["results"] = results
-		res["max"] = max
-		res["total"] = count
-		return res
-	end
-end
-
-# Error handler
-class APIErrorHandler
-	super APIHandler
-
-	redef fun all(req, res) do res.api_error(404, "Not found")
 end
 
 # /sites
@@ -114,6 +41,8 @@ end
 class APISites
 	super APIHandler
 
+	redef type BODY: SiteForm
+	redef fun new_body_object(d) do return new SiteForm.from_deserializer(d)
 	redef var validator is lazy do return new SiteValidator
 
 	redef fun get(req, res) do
@@ -127,7 +56,7 @@ class APISites
 	redef fun post(req, res) do
 		var post = validate(req, res)
 		if post == null then return
-		var form = deserialize_site(req, res)
+		var form = deserialize_body(req, res)
 		if form == null then return
 		var site = new Site(form.url, form.name)
 		config.sites.save site
@@ -142,18 +71,20 @@ end
 class APISite
 	super APIHandler
 
+	redef type BODY: SiteForm
+	redef fun new_body_object(d) do return new SiteForm.from_deserializer(d)
 	redef var validator is lazy do return new SiteValidator
 
 	# Get the site for `:siteid`
 	fun get_site(req: HttpRequest, res: HttpResponse): nullable Site do
 		var siteid = req.param("siteid")
 		if siteid == null then
-			res.api_error(400, "Missing :siteid")
+			res.api_error("Missing :siteid", 400)
 			return null
 		end
 		var site = config.sites.find_by_id(siteid)
 		if site == null then
-			res.api_error(404, "Site `{siteid}` not found")
+			res.api_error("Site `{siteid}` not found", 404)
 			return null
 		end
 		return site
@@ -170,7 +101,7 @@ class APISite
 		if site == null then return
 		var post = validate(req, res)
 		if post == null then return
-		var form = deserialize_site(req, res)
+		var form = deserialize_body(req, res)
 		if form == null then return
 		site.name = form.name
 		site.url = form.url
@@ -247,12 +178,12 @@ class APIStatus
 		if site == null then return null
 		var statusid = req.param("statusid")
 		if statusid == null then
-			res.api_error(400, "Missing :statusid")
+			res.api_error("Missing :statusid", 400)
 			return null
 		end
 		var status = config.status.find_by_id(statusid)
 		if status == null then
-			res.api_error(404, "Status `{statusid}` not found")
+			res.api_error("Status `{statusid}` not found", 404)
 			return null
 		end
 		return status
@@ -289,23 +220,5 @@ class SiteValidator
 	redef init do
 		add new StringField("name", required=true, min_size=1)
 		add new URLField("url", required=true)
-	end
-end
-
-redef class HttpResponse
-
-	# Return an api error as a json object
-	fun api_error(status: Int, message: String) do
-		var obj = new JsonObject
-		obj["status"] = status
-		obj["message"] = message
-		json(obj, status)
-	end
-end
-
-redef class ValidationResult
-	redef fun core_serialize_to(v) do
-		v.serialize_attribute("has_error", has_error)
-		v.serialize_attribute("errors", errors)
 	end
 end
