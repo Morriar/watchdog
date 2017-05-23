@@ -267,7 +267,6 @@ end
 
 # Site form from frontend
 class SiteForm
-	super Jsonable
 	serialize
 
 	# Site id or null if new
