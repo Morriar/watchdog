@@ -33,7 +33,15 @@
 		$locationProvider.html5Mode(true);
 		$stateProvider
 			.state({
-				name: 'home',
+				name: 'root',
+				abstract: true,
+				controller: function() {
+				},
+				controllerAs: 'vm',
+				templateUrl: '/views/root.html'
+			})
+			.state({
+				name: 'root.home',
 				url: '/',
 				resolve: {
 					sites: function(Sites, $q) {

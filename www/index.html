@@ -15,40 +15,13 @@
 		<link href='/stylesheets/app.css' rel='stylesheet'>
 	</head>
 	<body ng-cloak>
-
-		<div>
-			<nav class='navbar navbar-inverse navbar-primary navbar-fixed-top'>
-				<div class='container-fluid'>
-					<div class='navbar-header dropdown'>
-						<a class='navbar-brand' ui-sref='home'>
-							<span class='glyphicon glyphicon-eye-open' />
-						</a>
-						<a class='navbar-brand' ui-sref='home'>
-							Watchdog
-						</a>
-					</div>
-					<div class='nav navbar-nav navbar-right'>
-						<ui-alerts />
-					</div>
-				</div>
-			</nav>
-
-			<div class='container-fluid'>
-				<ui-view></ui-view>
-			</div>
-
-			<div class='container-fluid text-center text-muted'>
-				<br>
-				<p>Watchdog powered by <a href='http://nitlanguage.org'>nit</a>!</p>
-				<br>
-			</div>
-		</div>
+		<ui-view></ui-view>
 
 		<script src='https://code.jquery.com/jquery-1.12.4.min.js'
 			integrity='sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ='
 			crossorigin='anonymous''></script>
 
-		<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js' 			integrity='sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS' crossorigin='anonymous'></script>
+		<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js' integrity='sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS' crossorigin='anonymous'></script>
 
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.5/angular.min.js'></script>
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.1/angular-ui-router.min.js'></script>
