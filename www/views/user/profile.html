@@ -1,0 +1,69 @@
+<div class='container'>
+	<h1>Profile</h1>
+	<hr>
+	<br>
+
+	<h3>Change email</h3>
+	<div class='panel panel-default'>
+		<form class='panel-body' ng-submit='vm.submitEmail()'>
+			<div class='form-group' ng-class='{"has-error": vm.emailErrors.email}'>
+				<label class='control-label'>Email</label>
+				<input name='email' type='text' class='form-control'
+					ng-model='vm.emailForm.email'>
+				<span class='help-block'>
+					Will be used for password recovery and monitoring alerts.
+					We promise not to share your email with anyone.
+				</span>
+				<span class='help-block' ng-repeat='err in vm.emailErrors.email'>
+					{{err}}
+				</span>
+			</div>
+			<button type='submit' class='btn btn-primary' ng-disabled='vm.emailForm.sent'>
+				Update email
+			</button>
+			&nbsp;&nbsp;
+			<span class='text-success' ng-if='vm.emailForm.is_valid'>
+				<span class='glyphicon glyphicon-ok' />&nbsp;
+				Email verified
+			</span>
+			<span class='text-warning' ng-if='!vm.emailForm.is_valid'>
+				<span class='glyphicon glyphicon-remove' />&nbsp;
+				Email unverified
+			</span>
+			&nbsp;&nbsp;
+			<span ng-if='!vm.emailForm.is_valid'>
+				Verification email sent.
+				<a ng-click='vm.resendEmailValidation()'>Resend</a>
+			</span>
+		</form>
+	</div>
+	<br>
+
+	<h3>Change password</h3>
+	<div class='panel panel-default'>
+		<form class='panel-body' ng-submit='vm.submitPassword()'>
+			<div class='form-group' ng-class='{"has-error": vm.pwdErrors.old}'>
+				<label class='control-label'>Current password</label>
+				<input name='old' type='password' class='form-control'
+					ng-model='vm.pwdForm.old'>
+				<span class='help-block' ng-repeat='err in vm.pwdErrors.old'>
+					{{err}}
+				</span>
+			</div>
+			<div class='form-group' ng-class='{"has-error": vm.pwdErrors.password}'>
+				<label class='control-label'>New password</label>
+				<input name='password' type='password' class='form-control'
+					ng-model='vm.pwdForm.password'>
+				<span class='help-block'>
+					Must be at least 6 characters long.
+				</span>
+				<span class='help-block' ng-repeat='err in vm.pwdErrors.password'>
+					{{err}}
+				</span>
+			</div>
+			<button type='submit' class='btn btn-primary' ng-disabled='vm.pwdForm.sent'>
+				Update password
+			</button>
+		</form>
+	</div>
+</div>

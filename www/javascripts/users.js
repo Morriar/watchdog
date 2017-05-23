@@ -20,9 +20,115 @@
 
 		/* Router */
 
+		.config(function ($stateProvider, $locationProvider) {
+			$locationProvider.html5Mode(true);
+			$stateProvider
+				.state({
+					name: 'root.user',
+					url: '/user',
+					controller: function() {},
+					controllerAs: 'vm',
+					templateUrl: '/views/user/user.html',
+					abstract: true
+				})
+				.state({
+					name: 'root.user.profile',
+					url: '/profile',
+					resolve: {
+						email: function(Users, $q) {
+							var d = $q.defer();
+							Users.getEmail(d.resolve, function () { d.resolve() });
+							return d.promise;
+						}
+					},
+					controller: 'ProfileCtrl',
+					controllerAs: 'vm',
+					templateUrl: '/views/user/profile.html'
+				})
+		})
+
 		/* Model */
 
+		.factory('Users', function($http) {
+			return {
+				getEmail: function(cb, cbErr) {
+					$http.get('/api/user/email')
+						.success(cb)
+						.error(cbErr);
+				},
+				changeEmail: function(data, cb, cbErr) {
+					$http.post('/api/user/email', data)
+						.success(cb)
+						.error(cbErr);
+				},
+				changePassword: function(data, cb, cbErr) {
+					$http.post('/api/user/password', data)
+						.success(cb)
+						.error(cbErr);
+				},
+				resendEmail: function(cb, cbErr) {
+					$http.put('/api/user/email')
+						.success(cb)
+						.error(cbErr);
+				}
+			}
+		})
+
 		/* Controllers */
+
+		.controller('ProfileCtrl', function(Users, session, email, $scope) {
+			var vm = this;
+			vm.emailForm = email;
+			vm.pwdForm = {};
+
+			this.submitEmail = function() {
+				Users.changeEmail(vm.emailForm,
+					function(data) {
+						vm.emailErrors = null;
+						vm.emailForm = data;
+						vm.emailForm.sent = true;
+						$scope.$emit('alert', {
+							status: 'success',
+							message: 'Email updated, email verification sent'}
+						)
+					}, function(err) {
+						vm.emailErrors = err.errors;
+						vm.emailForm.sent = false;
+					});
+			}
+
+			this.resendEmailValidation = function() {
+				Users.resendEmail(
+					function(data) {
+						$scope.$emit('alert', {
+							status: 'success',
+							message: 'Email verification sent'}
+						)
+					}, function(err) {
+						vm.emailErrors = err.errors;
+					});
+			}
+
+			this.submitPassword = function() {
+				Users.changePassword(vm.pwdForm,
+					function(data) {
+						vm.pwdErrors = null;
+						vm.pwdForm = {};
+						vm.pwdForm.sent = true;
+						$scope.$emit('alert', {
+							status: 'success',
+							message: 'Password updated'}
+						)
+					}, function(err) {
+						if(err.status == 403) {
+							vm.pwdErrors = { old: [err.message] };
+						} else {
+							vm.pwdErrors = err.errors;
+						}
+						vm.pwdForm.sent = false;
+					});
+			}
+		})
 
 		/* Directives */
 
