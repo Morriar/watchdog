@@ -17,18 +17,56 @@ module model
 
 import curl
 import realtime
-import popcorn::pop_repos
+import popcorn::pop_auth_basic
 
 redef class AppConfig
 
 	# Mongodb
 	redef var default_db_name = "watchdog"
 
+	# User repository (also used for auth)
+	var users = new UserRepo(db.collection("users")) is lazy
+
+	redef var auth_repo = users is lazy
+
 	# Site repository
 	var sites = new SiteRepo(db.collection("sites")) is lazy
 
 	# Site status repository
 	var status = new StatusRepo(db.collection("status")) is lazy
+
+	# --salt
+	var opt_salt = new OptionString("Password salt", "--salt")
+
+	# Salt used to encode_passwords
+	var password_salt: String  is lazy do
+		return opt_salt.value or else ini["app.salt"] or else "watchdog"
+	end
+
+	# Encode `password` in md5 using `password_salt`
+	fun encode_password(password: String): String do
+		return (password + password_salt).md5
+	end
+end
+
+redef class User
+	serialize
+
+	redef var id = login is lateinit, serialize_as "_id"
+end
+
+# The user repository used to implement the AuthRepository methods
+class UserRepo
+	super AuthRepository
+	super MongoRepository[User]
+
+	redef fun find_by_login(login) do
+		return find((new MongoMatch).eq("login", login))
+	end
+
+	redef fun find_by_email(email) do
+		return find((new MongoMatch).eq("email", email))
+	end
 end
 
 # A site to check

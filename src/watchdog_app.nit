@@ -23,12 +23,22 @@ if config.help then
 	exit 0
 end
 
-var app = new App
+# Set basic auth config
+config.email_from = "Watchdog <watchdog@moz-code.org>"
+config.validation_email_subject = "Welcome to watchdog"
+config.validation_uri = "http://localhost:3000/api/auth/email"
+config.validation_redirection_uri = "/auth/email_activation"
+config.validate_emails = true
+config.lost_password_email_subject = "Watchdog password reset"
+config.lost_password_uri = "http://localhost:3000/auth/reset_password"
 
+
+var app = new App
 app.tasks.add(new CheckSites(config))
 
+app.use_before("/*", new SessionInit)
+app.use("/api/auth", new AuthBasicRouter(config))
 app.use("/api", new APIRouter(config))
-
 app.use("/data", new StaticHandler("data"))
 app.use("/*", new StaticHandler("www", "index.html"))
 
