@@ -15,7 +15,7 @@
 # Serve model as a REST api
 module api_sites
 
-import api_base
+import api_users
 import cron
 
 # API Sites Router
@@ -46,19 +46,24 @@ class APISites
 	redef var validator is lazy do return new SiteValidator
 
 	redef fun get(req, res) do
+		var user = require_authentification(req, res)
+		if user == null then return
+
 		var arr = new JsonArray
-		for site in config.sites.find_all do
+		for site in user.sites(config) do
 			arr.add new SiteForm(site.id, site.url, site.name, site.last_status(config))
 		end
 		res.json arr
 	end
 
 	redef fun post(req, res) do
+		var user = require_authentification(req, res)
+		if user == null then return
 		var post = validate_body(req, res)
 		if post == null then return
 		var form = deserialize_body(req, res)
 		if form == null then return
-		var site = new Site(form.url, form.name)
+		var site = new Site(user.login, form.url, form.name)
 		config.sites.save site
 		config.check_site(site)
 		res.json site
@@ -77,12 +82,15 @@ class APISite
 
 	# Get the site for `:siteid`
 	fun get_site(req: HttpRequest, res: HttpResponse): nullable Site do
+		var user = require_authentification(req, res)
+		if user == null then return null
+
 		var siteid = req.param("siteid")
 		if siteid == null then
 			res.api_error("Missing :siteid", 400)
 			return null
 		end
-		var site = config.sites.find_by_id(siteid)
+		var site = user.site(config, siteid)
 		if site == null then
 			res.api_error("Site `{siteid}` not found", 404)
 			return null

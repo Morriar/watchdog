@@ -53,6 +53,16 @@ redef class User
 	serialize
 
 	redef var id = login is lateinit, serialize_as "_id"
+
+	# Find sites owned by `self`
+	fun sites(config: AppConfig): Array[Site] do
+		return config.sites.find_by_user(self)
+	end
+
+	# Find site owned by `self` with `siteid`
+	fun site(config: AppConfig, siteid: String): nullable Site do
+		return config.sites.find_site_by_user(self, siteid)
+	end
 end
 
 # The user repository used to implement the AuthRepository methods
@@ -79,6 +89,9 @@ end
 class Site
 	super RepoObject
 	serialize
+
+	# Owner id
+	var user: String
 
 	# Site URL
 	var url: String is writable
@@ -135,6 +148,16 @@ end
 # Site repository
 class SiteRepo
 	super MongoRepository[Site]
+
+	# Find all status for `user`
+	fun find_by_user(user: User): Array[Site] do
+		return find_all((new MongoMatch).eq("user", user.id))
+	end
+
+	# Find `siteid` for `user`
+	fun find_site_by_user(user: User, siteid: String): nullable Site do
+		return find((new MongoMatch).eq("user", user.id).eq("_id", siteid))
+	end
 end
 
 # A status for a site at a given timestamp
