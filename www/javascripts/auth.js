@@ -24,7 +24,7 @@
 			$locationProvider.html5Mode(true);
 			$stateProvider
 				.state({
-					name: 'auth',
+					name: 'root.auth',
 					url: '/auth',
 					controller: function() {},
 					controllerAs: 'vm',
@@ -32,42 +32,42 @@
 					abstract: true
 				})
 				.state({
-					name: 'auth.signup',
+					name: 'root.auth.signup',
 					url: '/signup',
 					controller: 'SignupCtrl',
 					controllerAs: 'vm',
 					templateUrl: '/views/auth/signup.html'
 				})
 				.state({
-					name: 'auth.signin',
+					name: 'root.auth.signin',
 					url: '/login',
 					controller: 'SigninCtrl',
 					controllerAs: 'vm',
 					templateUrl: '/views/auth/signin.html'
 				})
 				.state({
-					name: 'auth.signout',
+					name: 'root.auth.signout',
 					url: '/signout',
 					controller: 'SignoutCtrl',
 					controllerAs: 'vm',
 					templateUrl: '/views/auth/signout.html'
 				})
 				.state({
-					name: 'auth.lostpassword',
+					name: 'root.auth.lostpassword',
 					url: '/lost_password',
 					controller: 'LostPasswordCtrl',
 					controllerAs: 'vm',
 					templateUrl: '/views/auth/lostpassword.html'
 				})
 				.state({
-					name: 'auth.resetpassword',
+					name: 'root.auth.resetpassword',
 					url: '/reset_password',
 					controller: 'ResetPasswordCtrl',
 					controllerAs: 'vm',
 					templateUrl: '/views/auth/resetpassword.html'
 				})
 				.state({
-					name: 'auth.emailactivation',
+					name: 'root.auth.emailactivation',
 					url: '/email_activation',
 					controller: 'EmailActivationCtrl',
 					controllerAs: 'vm',
