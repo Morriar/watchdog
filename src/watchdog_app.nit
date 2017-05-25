@@ -42,5 +42,5 @@ app.use("/*", new StaticHandler("www", "index.html"))
 
 app.use_after("/*", new ConsoleLog)
 
-app.start_tasks
+app.run_tasks
 app.listen(config.app_host, config.app_port)
