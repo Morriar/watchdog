@@ -68,26 +68,20 @@ class UserRepo
 end
 
 # A site to check
-#
-# ~~~
-# var site = new Site("http://nitlanguage.org")
-# var status = site.check_status
-# assert status.response_status == 200
-# ~~~
 class Site
 	super RepoObject
 	serialize
 
-	# Owner id
+	# Owner user id
 	var user: String
 
 	# Site URL
 	var url: String is writable
 
-	# Site name
+	# Site name (used as label in frontend)
 	var name: nullable String is writable
 
-	# Get all the statuses for `self`
+	# Get all the statuses for `self` sorted by reverse timestamp
 	fun status(config: AppConfig, s, l: nullable Int): Array[Status] do
 		return config.status.find_by_site(self, s, l)
 	end
@@ -97,7 +91,7 @@ class Site
 		return config.status.count_by_site(self)
 	end
 
-	# Get the last status for `self`
+	# Get the last status for `self` (the most recent)
 	fun last_status(config: AppConfig): nullable Status do
 		return config.status.last_by_site(self)
 	end
@@ -123,6 +117,7 @@ class Site
 		return new Status(id, time, code, status, body)
 	end
 
+	# Perform Curl HTTP request
 	private fun send_request: CurlResponse do
 		var req = new CurlHTTPRequest(url)
 		return req.execute
@@ -140,12 +135,12 @@ end
 class SiteRepo
 	super MongoRepository[Site]
 
-	# Find all status for `user`
+	# Find all status for `user` by order of creation
 	fun find_by_user(user: User): Array[Site] do
 		return find_all((new MongoMatch).eq("user", user.id))
 	end
 
-	# Find `siteid` for `user`
+	# Find `siteid` for `user` or null if not found
 	fun find_site_by_user(user: User, siteid: String): nullable Site do
 		return find((new MongoMatch).eq("user", user.id).eq("_id", siteid))
 	end
@@ -160,21 +155,21 @@ class Status
 	var site: String
 
 	# Timestamp of the status check
-	var timestamp: Int = get_time * 1000
+	var timestamp: Int = get_millitime
 
-	# Site response time
+	# Site response time in seconds
 	var response_time: Float
 
 	# Site response status code
 	var response_code: Int
 
-	# Site response status message
+	# Site response status message translated from code
 	var response_status: String
 
 	# Site response body
 	var response_body: String
 
-	# Site screencap id if any
+	# Site screencap url if any
 	var screencap: nullable String is writable
 
 	# Is the status between 100 and 399? (used for frontend)
@@ -208,7 +203,7 @@ class StatusRepo
 		return res
 	end
 
-	# Find all status for `site`
+	# Find all status for `site` (by reversed timestamp order)
 	fun find_by_site(site: Site, s, l: nullable Int): Array[Status] do
 		return find_all((new MongoMatch).eq("site", site.id), s, l)
 	end
@@ -218,7 +213,7 @@ class StatusRepo
 		return count((new MongoMatch).eq("site", site.id))
 	end
 
-	# Find last status for `site`
+	# Find last status for `site` (the most recent)
 	fun last_by_site(site: Site): nullable Status do
 		var last = find_by_site(site, 0, 1)
 		if last.is_empty then return null
