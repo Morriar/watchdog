@@ -17,17 +17,20 @@ import popcorn::pop_config
 
 redef class AppConfig
 
-	# --screencap
+	# --screencap path
 	var opt_screencap = new OptionString("Take a screen capture and save it under the given name",
 		"-s", "--screencap")
 
-	# --timeout
-	var opt_timeout = new OptionInt("Check site within an infinite loop with the given timeout in seconds",
+	# --timeout X
+	var opt_timeout = new OptionInt("Check site within an infinite loop every X seconds",
 		0, "-t", "--timeout")
+
+	# --body
+	var opt_body = new OptionBool("Show the response body", "-b", "--body")
 
 	redef init do
 		super
-		add_option(opt_screencap, opt_timeout)
+		add_option(opt_screencap, opt_timeout, opt_body)
 	end
 end
 
@@ -39,7 +42,7 @@ if config.args.length != 1 then
 	exit 1
 end
 
-var site = new Site(config.args.first)
+var site = new Site("cli", config.args.first)
 
 
 var timeout = config.opt_timeout.value
@@ -64,7 +67,9 @@ else
 
 	print "Response code: {status.response_code}"
 	print "Response time: {status.response_time}s"
-	print "Response body: {status.response_body}"
+	if config.opt_body.value then
+		print "Response body: {status.response_body}"
+	end
 	if status.screencap != null then
 		print "Screen capture generated to {status.screencap.as(not null)}"
 	end
