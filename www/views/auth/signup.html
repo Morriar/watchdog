@@ -1,55 +1,100 @@
-<div class='container-fluid'>
-	<div class='col-xs-3'></div>
-	<div class='col-xs-6'>
-		<div class='text-center'>
-			<h1>
-				<a ui-sref='root.home' style='color: inherit;'>
-					<span class='glyphicon glyphicon-eye-open' />
-				</a>
-			</h1>
-			<h2>Join Watchdog</h2>
+<div>
+	<div class='container'>
+		<h1 class='text-center'>
+			<span class='glyphicon glyphicon-eye-open' />
+			&nbsp;Watchdog
+		</h1>
+		<br><br><br>
+		<div class='col-xs-6'>
+			<br><br>
+			<h1>Monitor your sites</h1>
 			<br>
+			<p class='lead'>
+				Watchdog checks your services regularily to see if everything is ok.
+			</p>
+			<p class='lead text-muted'>
+				You can create your own dashboard, track your services response time
+				and keep an history of your frontpage years after years.
+			</p>
 		</div>
-		<div class='panel panel-default'>
-			<form class='panel-body' ng-submit='vm.submit()'>
-				<div class='form-group' ng-class='{"has-error": vm.errors.login}'>
-					<label class='control-label'>Username</label>
-					<input name='login' type='text' class='form-control'
-						ng-model='vm.form.login'>
-					<span class='help-block'>
-						This will be you public username.
-					</span>
-					<span class='help-block' ng-repeat='err in vm.errors.login'>
-						{{err}}
-					</span>
-				</div>
-				<div class='form-group' ng-class='{"has-error": vm.errors.email}'>
-					<label class='control-label'>Email</label>
-					<input name='email' type='text' class='form-control'
-						ng-model='vm.form.email'>
-					<span class='help-block'>
-						Will be used for password recovery and monitoring alerts.
-						We promise not to share your email with anyone.
-					</span>
-					<span class='help-block' ng-repeat='err in vm.errors.email'>
-						{{err}}
-					</span>
-				</div>
-				<div class='form-group' ng-class='{"has-error": vm.errors.password1}'>
-					<label class='control-label'>Password</label>
-					<input name='password' type='password' class='form-control'
-						ng-model='vm.form.password1'>
-					<span class='help-block'>
-						Must be at least 6 characters long.
-					</span>
-					<span class='help-block' ng-repeat='err in vm.errors.password1'>
-						{{err}}
-					</span>
-				</div>
-				<button type='submit' class='btn btn-primary' style='width: 100%'>
-					Signin
-				</button>
-			</form>
+		<div class='col-xs-6'>
+			<div class='panel panel-default'>
+				<form class='panel-body' ng-submit='vm.submit()'>
+					<div class='form-group' ng-class='{"has-error": vm.errors.login}'>
+						<label class='control-label'>Username</label>
+						<input name='login' type='text' class='form-control'
+							ng-model='vm.form.login'>
+						<span class='help-block'>
+							This will be you public username.
+						</span>
+						<span class='help-block' ng-repeat='err in vm.errors.login'>
+							{{err}}
+						</span>
+					</div>
+					<div class='form-group' ng-class='{"has-error": vm.errors.email}'>
+						<label class='control-label'>Email</label>
+						<input name='email' type='text' class='form-control'
+							ng-model='vm.form.email'>
+						<span class='help-block'>
+							Will be used for password recovery and monitoring alerts.
+							We promise not to share your email with anyone.
+						</span>
+						<span class='help-block' ng-repeat='err in vm.errors.email'>
+							{{err}}
+						</span>
+					</div>
+					<div class='form-group' ng-class='{"has-error": vm.errors.password1}'>
+						<label class='control-label'>Password</label>
+						<input name='password' type='password' class='form-control'
+							ng-model='vm.form.password1'>
+						<span class='help-block'>
+							Must be at least 6 characters long.
+						</span>
+						<span class='help-block' ng-repeat='err in vm.errors.password1'>
+							{{err}}
+						</span>
+					</div>
+					<button type='submit' class='btn btn-primary' style='width: 100%'>
+						Signup to watchdog
+					</button>
+				</form>
+			</div>
 		</div>
+	</div>
+	<br><br><hr><br>
+	<div class='container'>
+		<h1 class='text-center'>
+			<span class='glyphicon glyphicon-th' />
+			<br><br>Create your own dashboard
+		</h1>
+		<p class='text-center'>
+			Watchdog checks your services regularily to see if everything is ok.
+		</p>
+		<br><br>
+		<img src='' />
+	</div>
+	<br><br><hr><br>
+	<div class='container'>
+		<h1 class='text-center'>
+			<span class='glyphicon glyphicon-signal' />
+			<br><br>Monitor your services response time
+		</h1>
+		<p ng-if='vm.timeline' class='text-center'>
+			Watchdog checks your services regularily to see if everything is ok.
+		</p>
+		<br><br>
+		<img src='' />
+	</div>
+	<br><br><hr><br>
+	<div class='container'>
+		<h1 class='text-center'>
+			<span class='glyphicon glyphicon-calendar' />
+			<br><br>Keep history for years
+		</h1>
+		<p class='text-center'>
+			Watchdog checks your services regularily to see if everything is ok.
+		</p>
+		<br><br>
+		<img src='' />
 	</div>
 </div>

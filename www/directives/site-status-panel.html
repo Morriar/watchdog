@@ -6,7 +6,7 @@
 		<site-status-icon status='vm.site.last_status' />
 		&nbsp;
 		<b>
-			<a ui-sref='site({sId: vm.site.id})' ng-class='{
+			<a ui-sref='root.site({sId: vm.site.id})' ng-class='{
 				"text-success": vm.site.last_status.is_ok,
 				"text-danger": !vm.site.last_status.is_ok
 			}'>{{vm.site.name}}</a>

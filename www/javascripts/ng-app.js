@@ -63,6 +63,11 @@
 				templateUrl: '/views/index.html'
 			})
 			.state({
+				name: 'root.404',
+				url: '/404',
+				templateUrl: '/views/404.html'
+			})
+			.state({
 				name: 'root.otherwise',
 				url: '*path',
 				template: '<panel404 />'

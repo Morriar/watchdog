@@ -53,6 +53,11 @@
 					templateUrl: '/views/auth/signout.html'
 				})
 				.state({
+					name: 'root.auth.out',
+					url: '/out',
+					templateUrl: '/views/auth/signout.html'
+				})
+				.state({
 					name: 'root.auth.lostpassword',
 					url: '/lost_password',
 					controller: 'LostPasswordCtrl',
@@ -129,7 +134,7 @@
 			}
 		})
 
-		.controller('SigninCtrl', function(Auth, $state) {
+		.controller('SigninCtrl', function(Auth) {
 			var vm = this;
 			vm.form = {};
 
@@ -138,7 +143,7 @@
 					function(data) {
 						vm.errors = null;
 						// TODO redirect to `from` page
-						$state.go('root.home');
+						window.location.replace("/");
 					}, function(err) {
 						vm.errors = err.errors;
 						if(err.status == 403) {
@@ -148,8 +153,10 @@
 			}
 		})
 
-		.controller('SignoutCtrl', function(Auth, $state) {
-			Auth.signout(function(data) {}, function(err) {});
+		.controller('SignoutCtrl', function(Auth) {
+			Auth.signout(function(data) {
+				window.location.replace("/auth/out");
+			}, function(err) {});
 		})
 
 		.controller('LostPasswordCtrl', function(Auth) {

@@ -24,7 +24,7 @@
 			$locationProvider.html5Mode(true);
 			$stateProvider
 				.state({
-					name: 'site',
+					name: 'root.site',
 					url: '/sites/{sId}?q&p&n',
 					templateUrl: '/views/site.html',
 					resolve: {
@@ -148,8 +148,9 @@
 
 		/* Controllers */
 
-		.controller('SitesCtrl', function($scope, Errors, Sites, sites) {
+		.controller('SitesCtrl', function($scope, $state, Errors, Sites, sites, session) {
 			var vm = this;
+			vm.session = session;
 
 			vm.init = function() {
 				vm.site = {
@@ -180,12 +181,17 @@
 				}, Errors.handleError);
 			})
 
-			vm.init();
-			vm.sites = sites;
+			if(!vm.session) {
+				$state.go('root.auth.signup', null, { location: false });
+			} else {
+				vm.init();
+				vm.sites = sites;
+			}
 		})
 
-		.controller('SiteCtrl', function($stateParams, $scope, $state, Errors, Sites, site) {
+		.controller('SiteCtrl', function($stateParams, $scope, $state, Errors, Sites, site, session) {
 			var vm = this;
+			vm.session = session;
 
 			vm.page = $stateParams.p ? $stateParams.p : 1;
 			vm.limit = $stateParams.l ? $stateParams.l : 20;
@@ -223,10 +229,14 @@
 				vm.loadPage(page, limit);
 			})
 
-			vm.site = site;
-			vm.loadPage(1, 20);
-			vm.loadTimeline();
-			vm.edit = false;
+			if(!vm.session) {
+				$state.go('root.404', null, { location: false });
+			} else {
+				vm.site = site;
+				vm.loadPage(1, 20);
+				vm.loadTimeline();
+				vm.edit = false;
+			}
 		})
 
 		/* Directives */
@@ -280,6 +290,8 @@
 					status: '='
 				},
 				controller: function(Sites) {
+					if(!this.status) return;
+
 					if(this.status.response_code < 100) {
 						this.statusString = this.status.response_body;
 					} else {

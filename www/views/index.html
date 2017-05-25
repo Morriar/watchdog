@@ -1,4 +1,4 @@
-<div class='container-fluid'>
+<div class='container-fluid' ng-if='vm.session'>
 	<site-form site='vm.site' new='true' errors='vm.error.errors' />
 	<br><br>
 	<div ng-if='vm.sites && vm.sites.length > 0' class='container-fluid'>
