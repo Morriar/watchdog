@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# CRON tasks system
+# CRON tasks system to check sites periodically
 module cron
 
 import model
 import popcorn
+import popcorn::pop_tasks
 import pthreads
 
 redef class AppConfig
@@ -68,28 +69,12 @@ redef class AppConfig
 	end
 end
 
-redef class App
-
-	# Tasks to run
-	var tasks = new Array[PopTask]
-
-	# Run all registered tasks
-	fun start_tasks do for task in tasks do task.start
-end
-
-# An abstract Popcorn task
-abstract class PopTask
-	super Thread
-
-	# App configuration so we can access App related services
-	var config: AppConfig
-
-	redef fun main do return null
-end
-
 # Check all the registered sites
 class CheckSites
 	super PopTask
+
+	# App config
+	var config: AppConfig
 
 	# Send an alert to `user` about the `status` of `site`
 	fun send_alert(user: User, site: Site, status: Status) do
@@ -107,7 +92,7 @@ class CheckSites
 
 	redef fun main do
 		loop
-			for user in config.auth_repo.find_all do
+			for user in config.users.find_all do
 				for site in user.sites(config) do
 					var status = config.check_site(site)
 					if not status.is_ok then send_alert(user, site, status)
