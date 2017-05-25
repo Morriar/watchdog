@@ -259,7 +259,7 @@
 				controllerAs: 'vm',
 				restrict: 'E',
 				replace: true,
-				templateUrl: '/directives/site-form.html'
+				templateUrl: '/directives/sites/form.html'
 			};
 		})
 
@@ -279,7 +279,7 @@
 				controllerAs: 'vm',
 				restrict: 'E',
 				replace: true,
-				templateUrl: '/directives/site-status-panel.html'
+				templateUrl: '/directives/sites/status-panel.html'
 			};
 		})
 
@@ -301,7 +301,7 @@
 				controllerAs: 'vm',
 				restrict: 'E',
 				replace: true,
-				templateUrl: '/directives/site-status-string.html'
+				templateUrl: '/directives/sites/status-string.html'
 			};
 		})
 
@@ -315,7 +315,7 @@
 				controllerAs: 'vm',
 				restrict: 'E',
 				replace: true,
-				templateUrl: '/directives/site-status-icon.html'
+				templateUrl: '/directives/sites/status-icon.html'
 			};
 		})
 
@@ -329,7 +329,7 @@
 				controllerAs: 'vm',
 				restrict: 'E',
 				replace: true,
-				templateUrl: '/directives/site-status-screen.html'
+				templateUrl: '/directives/sites/status-screen.html'
 			};
 		})
 
@@ -343,7 +343,7 @@
 				controllerAs: 'vm',
 				restrict: 'E',
 				replace: true,
-				templateUrl: '/directives/status.html'
+				templateUrl: '/directives/sites/status.html'
 			};
 		})
 
