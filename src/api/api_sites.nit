@@ -88,12 +88,12 @@ class APISite
 
 		var siteid = req.param("siteid")
 		if siteid == null then
-			res.api_error("Missing :siteid", 400)
+			res.message("Missing :siteid", 400)
 			return null
 		end
 		var site = user.site(config, siteid)
 		if site == null then
-			res.api_error("Site `{siteid}` not found", 404)
+			res.message("Site `{siteid}` not found", 404)
 			return null
 		end
 		return site
@@ -188,12 +188,12 @@ class APIStatus
 		if site == null then return null
 		var statusid = req.param("statusid")
 		if statusid == null then
-			res.api_error("Missing :statusid", 400)
+			res.message("Missing :statusid", 400)
 			return null
 		end
 		var status = config.status.find_by_id(statusid)
 		if status == null then
-			res.api_error("Status `{statusid}` not found", 404)
+			res.message("Status `{statusid}` not found", 404)
 			return null
 		end
 		return status

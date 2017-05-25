@@ -71,12 +71,12 @@ class APIUserEmail
 		if user == null then return
 
 		if user.email_is_valid then
-			res.api_error("Email already verified", 400)
+			res.message("Email already verified", 400)
 			return
 		end
 
 		config.send_validation_email(user)
-		res.api_error("Email verification send", 200)
+		res.message("Email verification send", 200)
 	end
 end
 
@@ -141,7 +141,7 @@ class APIUserPassword
 
 		var auth = config.try_credentials(user.login, form.old)
 		if auth == null then
-			res.json_error("Wrong password", 403)
+			res.message("Wrong password", 403)
 			return
 		end
 
@@ -149,7 +149,7 @@ class APIUserPassword
 		user.password_hash = creds.first
 		user.password_salt = creds.second
 		config.auth_repo.save user
-		res.api_error("Password updated", 200)
+		res.message("Password updated", 200)
 	end
 end
 
@@ -191,8 +191,8 @@ class APIUserAlerts
 		if form == null then return
 
 		user.alerts = form.alerts
-		config.auth_repo.save user
-		res.api_error("Alert updated", 200)
+		config.users.save user
+		res.message("Alert updated", 200)
 	end
 end
 

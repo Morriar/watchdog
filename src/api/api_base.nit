@@ -51,8 +51,8 @@ end
 
 redef class HttpResponse
 
-	# Return an api error as a json object
-	fun api_error(message: String, status: Int) do
+	# Return a `message` as a json object
+	fun message(message: String, status: Int) do
 		var obj = new JsonObject
 		obj["status"] = status
 		obj["message"] = message

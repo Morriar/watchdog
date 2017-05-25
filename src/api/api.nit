@@ -37,5 +37,5 @@ end
 class APIErrorHandler
 	super APIHandler
 
-	redef fun all(req, res) do res.api_error("Not found", 404)
+	redef fun all(req, res) do res.message("Not found", 404)
 end
