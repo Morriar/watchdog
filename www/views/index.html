@@ -6,4 +6,7 @@
 			<site-status-panel site='site' />
 		</div>
 	</div>
+	<div ng-if='!vm.sites || vm.sites.length == 0' class='container-fluid'>
+		<p class='lead text-muted text-center'>No sites yet? Maybe you should create one!</p>
+	</div>
 </div>
