@@ -37,28 +37,28 @@ redef class AppConfig
 
 	# Send and alert to `user` about the `status` of `site`
 	fun send_alert(user: User, site: Site, status: Status) do
-		var subject = "watchdog alert for {site.name or else site.url}"
+		var subject = "Watchdog alert for {site.name or else site.url}"
 		var body = """
-<h1>Hi {{{user.login}}},</h1>
+<p>Hi {{{user.login}}},</p>
 
 <p>
-	There seems to be a problem with
-	<a href='{{{site.name or else site.url}}}'>{{{site.url}}}</a></p>
+	There seems to be a problem with the service
+	<a href='{{{site.url}}}'>{{{site.name or else site.url}}}</a>
 </p>
-<p>The service responded <b>{{{status.response_code}}}</b>.</p>"""
+<p>The service responded <b>{{{status.response_code}}}: {{{status.response_status}}}</b>.</p>"""
 
 		if status.screencap != null then
 			body += """
 <p>
-	Here a screeencap of your service:
-	<img src='{{{app_hostname}}}/{{{status.screencap.as(not null)}}}' />
+	Here a screeencap of your service:<br>
+	<img src='http://{{{app_hostname}}}/{{{status.screencap.as(not null)}}}' />
 </p>"""
 		end
 
 		body += """
 <small>
 	If you don't want to receive this email again,
-	disable alerts in your <a href='{{{app_hostname}}}/settings'>settings page</a>.
+	disable alerts in your <a href='http://{{{app_hostname}}}/settings'>settings page</a>.
 </small>"""
 
 		var mail = new Mail(email_from, subject, body)
@@ -98,8 +98,10 @@ class CheckSites
 
 		var last_alert = site.last_alert
 		var now = get_time * 1000
-		var del = 86400 * 1000
-		if last_alert != null and last_alert.timestamp + del > now then return
+		var delay = 24 * 60 * 60 * 1000
+		if last_alert != null and last_alert + delay > now then return
+		site.last_alert = now
+		config.sites.save site
 		config.send_alert(user, site, status)
 	end
 
@@ -109,9 +111,10 @@ class CheckSites
 				for site in user.sites(config) do
 					var status = config.check_site(site)
 					if not status.is_ok then send_alert(user, site, status)
+					0.1.sleep
 				end
 			end
-			5.0.sleep
+			3600.sleep
 		end
 	end
 end
@@ -130,5 +133,5 @@ redef class Site
 	var alerts = false is writable
 
 	# Last status send as alert or null if any
-	var last_alert: nullable Status = null
+	var last_alert: nullable Int = null
 end

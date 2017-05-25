@@ -26,12 +26,11 @@ end
 # Set basic auth config
 config.email_from = "Watchdog <watchdog@moz-code.org>"
 config.validation_email_subject = "Welcome to watchdog"
-config.validation_uri = "http://localhost:3000/api/auth/email"
+config.validation_uri = "http://{config.app_hostname}/api/auth/email"
 config.validation_redirection_uri = "/auth/email_activation"
 config.validate_emails = true
 config.lost_password_email_subject = "Watchdog password reset"
-config.lost_password_uri = "http://localhost:3000/auth/reset_password"
-
+config.lost_password_uri = "http://{config.app_hostname}/auth/reset_password"
 
 var app = new App
 app.tasks.add(new CheckSites(config))
