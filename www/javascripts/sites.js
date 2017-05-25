@@ -152,7 +152,7 @@
 			vm.removeSite = function() {
 				Sites.removeSite(vm.site.id, function(data) {
 					$scope.$emit('alert', {status: 'success', message: 'Site deleted'})
-					$state.go('home');
+					$state.go('root.home');
 				}, Errors.handleError);
 			}
 
