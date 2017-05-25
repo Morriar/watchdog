@@ -161,7 +161,8 @@
 			vm.init = function() {
 				vm.site = {
 					name: '',
-					url: ''
+					url: '',
+					alerts: false
 				}
 			}
 
@@ -174,6 +175,7 @@
 			$scope.$on('submit-site', function(e, site) {
 				Sites.createSite(site, function(data) {
 					vm.error = null;
+					vm.add = false;
 					vm.init();
 					vm.loadSites();
 					$scope.$emit('alert', {status: 'success', message: 'Site created'})

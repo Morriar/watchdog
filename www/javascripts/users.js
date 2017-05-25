@@ -48,6 +48,11 @@
 						.success(cb)
 						.error(cbErr);
 				},
+				resendEmail: function(cb, cbErr) {
+					$http.put('/api/user/email')
+						.success(cb)
+						.error(cbErr);
+				},
 				changeEmail: function(data, cb, cbErr) {
 					$http.post('/api/user/email', data)
 						.success(cb)
@@ -58,8 +63,8 @@
 						.success(cb)
 						.error(cbErr);
 				},
-				resendEmail: function(cb, cbErr) {
-					$http.put('/api/user/email')
+				changeAlerts: function(data, cb, cbErr) {
+					$http.post('/api/user/alerts', data)
 						.success(cb)
 						.error(cbErr);
 				}
@@ -76,6 +81,7 @@
 			}
 
 			var vm = this;
+			vm.session = session;
 			vm.emailForm = email;
 			vm.pwdForm = {};
 
@@ -125,6 +131,16 @@
 						}
 						vm.pwdForm.sent = false;
 					});
+			}
+
+			this.submitAlerts = function() {
+				Users.changeAlerts(vm.session,
+					function(data) {
+						$scope.$emit('alert', {
+							status: 'success',
+							message: 'Alerts updated'}
+						)
+					}, function(err) {});
 			}
 		})
 

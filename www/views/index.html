@@ -1,5 +1,4 @@
 <div class='container-fluid' ng-if='vm.session'>
-	<site-form site='vm.site' new='true' errors='vm.error.errors' />
 	<br><br>
 	<div ng-if='vm.sites && vm.sites.length > 0' class='container-fluid'>
 		<div class='col-xs-4' ng-repeat='site in vm.sites'>
@@ -8,5 +7,15 @@
 	</div>
 	<div ng-if='!vm.sites || vm.sites.length == 0' class='container-fluid'>
 		<p class='lead text-muted text-center'>No sites yet? Maybe you should create one!</p>
+	</div>
+	<div class='container-fluid text-center'>
+		<br>
+		<button class='btn btn-success' ng-click='vm.add = !vm.add' title='Add site'>
+			<span class='glyphicon glyphicon-plus' />&nbsp;&nbsp;Add a site
+		</button>
+		<br><br><br>
+	</div>
+	<div class='container-fluid'>
+		<site-form site='vm.site' new='true' errors='vm.error.errors' ng-if='vm.add' />
 	</div>
 </div>

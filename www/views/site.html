@@ -12,10 +12,7 @@
 	<a class='text-muted' href='{{vm.site.url}}'>{{vm.site.url}}</a>
 	<br><br>
 
-	<div ng-if='vm.edit'>
-		<site-form site='vm.site' errors='vm.error.errors' />
-		<br><br>
-	</div>
+	<site-form site='vm.site' errors='vm.error.errors' ng-if='vm.edit' />
 
 	<status status='vm.site.last_status' />
 	<br>

@@ -26,7 +26,7 @@
 				<span class='glyphicon glyphicon-ok' />&nbsp;
 				Email verified
 			</span>
-			<span class='text-warning' ng-if='!vm.emailForm.is_valid'>
+			<span class='text-danger' ng-if='!vm.emailForm.is_valid'>
 				<span class='glyphicon glyphicon-remove' />&nbsp;
 				Email unverified
 			</span>
@@ -64,6 +64,26 @@
 			<button type='submit' class='btn btn-primary' ng-disabled='vm.pwdForm.sent'>
 				Update password
 			</button>
+		</form>
+	</div>
+	<br>
+
+	<h3>Alerts</h3>
+	<div class='panel panel-default'>
+		<form class='panel-body'>
+			<fieldset ng-disabled='!vm.emailForm.is_valid'>
+				<label class='control-label'>Send email alerts</label>
+				<div class='checkbox'>
+					<label>
+						<input name='alerts' type='checkbox' ng-model='vm.session.alerts'
+							ng-change='vm.submitAlerts()'>
+						Send me email alerts if my sites do not respond
+					</label>
+				</div>
+				<p class='text-danger' ng-if='!vm.emailForm.is_valid'>
+					You cannot activate email alerts until your address is verified.
+				</p>
+			</fieldset>
 		</form>
 	</div>
 </div>
