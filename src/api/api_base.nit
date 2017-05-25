@@ -59,10 +59,3 @@ redef class HttpResponse
 		json(obj, status)
 	end
 end
-
-redef class ValidationResult
-	redef fun core_serialize_to(v) do
-		v.serialize_attribute("has_error", has_error)
-		v.serialize_attribute("errors", errors)
-	end
-end
