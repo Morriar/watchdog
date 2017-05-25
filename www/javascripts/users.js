@@ -24,16 +24,8 @@
 			$locationProvider.html5Mode(true);
 			$stateProvider
 				.state({
-					name: 'root.user',
-					url: '/user',
-					controller: function() {},
-					controllerAs: 'vm',
-					templateUrl: '/views/user/user.html',
-					abstract: true
-				})
-				.state({
-					name: 'root.user.profile',
-					url: '/profile',
+					name: 'root.settings',
+					url: '/settings',
 					resolve: {
 						email: function(Users, $q) {
 							var d = $q.defer();
@@ -41,9 +33,9 @@
 							return d.promise;
 						}
 					},
-					controller: 'ProfileCtrl',
+					controller: 'SettingsCtrl',
 					controllerAs: 'vm',
-					templateUrl: '/views/user/profile.html'
+					templateUrl: '/views/settings.html'
 				})
 		})
 
@@ -76,7 +68,7 @@
 
 		/* Controllers */
 
-		.controller('ProfileCtrl', function(Users, session, email, $scope) {
+		.controller('SettingsCtrl', function(Users, session, email, $scope) {
 			var vm = this;
 			vm.emailForm = email;
 			vm.pwdForm = {};
