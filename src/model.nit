@@ -233,6 +233,8 @@ class StatusRepo
 
 	# Find last status for `site`
 	fun last_by_site(site: Site): nullable Status do
-		return find((new MongoMatch).eq("site", site.id))
+		var last = find_by_site(site, 0, 1)
+		if last.is_empty then return null
+		return last.first
 	end
 end
