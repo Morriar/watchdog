@@ -51,7 +51,7 @@ class APISites
 
 		var arr = new JsonArray
 		for site in user.sites(config) do
-			arr.add new SiteForm(site.id, site.url, site.name, site.last_status(config))
+			arr.add new SiteForm(site.id, site.url, site.name, site.alerts, site.last_status(config))
 		end
 		res.json arr
 	end
@@ -64,6 +64,7 @@ class APISites
 		var form = deserialize_body(req, res)
 		if form == null then return
 		var site = new Site(user.login, form.url, form.name)
+		site.alerts = form.alerts
 		config.sites.save site
 		config.check_site(site)
 		res.json site
@@ -101,7 +102,7 @@ class APISite
 	redef fun get(req, res) do
 		var site = get_site(req, res)
 		if site == null then return
-		res.json new SiteForm(site.id, site.url, site.name, site.last_status(config))
+		res.json new SiteForm(site.id, site.url, site.name, site.alerts, site.last_status(config))
 	end
 
 	redef fun post(req, res) do
@@ -113,15 +114,16 @@ class APISite
 		if form == null then return
 		site.name = form.name
 		site.url = form.url
+		site.alerts = form.alerts
 		config.sites.save site
-		res.json new SiteForm(site.id, site.url, site.name, site.last_status(config))
+		res.json new SiteForm(site.id, site.url, site.name, site.alerts, site.last_status(config))
 	end
 
 	redef fun delete(req, res) do
 		var site = get_site(req, res)
 		if site == null then return
 		config.sites.remove_by_id(site.id)
-		res.json new SiteForm(site.id, site.url, site.name, site.last_status(config))
+		res.json new SiteForm(site.id, site.url, site.name, site.alerts, site.last_status(config))
 	end
 end
 
@@ -216,6 +218,9 @@ class SiteForm
 
 	# Site name (optional)
 	var name: nullable String
+
+	# Send alerts for this site?
+	var alerts: Bool
 
 	# Site last status if any
 	var last_status: nullable Status

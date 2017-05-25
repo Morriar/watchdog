@@ -15,6 +15,7 @@
 module api_users
 
 import api_base
+import cron
 
 # API Users Router
 class APIUsersRouter
@@ -27,6 +28,7 @@ class APIUsersRouter
 		super
 		use("/email", new APIUserEmail(config))
 		use("/password", new APIUserPassword(config))
+		use("/alerts", new APIUserAlerts(config))
 	end
 end
 
@@ -167,5 +169,44 @@ class PasswordValidator
 	redef init do
 		add new StringField("old", min_size=6, max_size=255)
 		add new StringField("password", min_size=6, max_size=255)
+	end
+end
+
+# /user/alerts
+#
+# POST: update the current user alerts settings
+class APIUserAlerts
+	super APIHandler
+
+	redef type BODY: AlertsForm
+	redef fun new_body_object(d) do return new AlertsForm.from_deserializer(d)
+	redef var validator is lazy do return new AlertsValidator
+
+	redef fun post(req, res) do
+		var user = require_authentification(req, res)
+		if user == null then return
+		var post = validate_body(req, res)
+		if post == null then return
+		var form = deserialize_body(req, res)
+		if form == null then return
+
+		user.alerts = form.alerts
+		config.auth_repo.save user
+		res.api_error("Alert updated", 200)
+	end
+end
+
+class AlertsForm
+	serialize
+
+	# Activate alerts?
+	var alerts: Bool
+end
+
+class AlertsValidator
+	super ObjectValidator
+
+	redef init do
+		add new BoolField("alerts", required=true)
 	end
 end
