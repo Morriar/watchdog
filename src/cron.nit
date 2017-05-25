@@ -34,6 +34,38 @@ redef class AppConfig
 		self.status.save status
 		return status
 	end
+
+	# Send and alert to `user` about the `status` of `site`
+	fun send_alert(user: User, site: Site, status: Status) do
+		var subject = "watchdog alert for {site.name or else site.url}"
+		var body = """
+<h1>Hi {{{user.login}}},</h1>
+
+<p>
+	There seems to be a problem with
+	<a href='{{{site.name or else site.url}}}'>{{{site.url}}}</a></p>
+</p>
+<p>The service responded <b>{{{status.response_code}}}</b>.</p>"""
+
+		if status.screencap != null then
+			body += """
+<p>
+	Here a screeencap of your service:
+	<img src='{{{app_hostname}}}/{{{status.screencap.as(not null)}}}' />
+</p>"""
+		end
+
+		body += """
+<small>
+	If you don't want to receive this email again,
+	disable alerts in your <a href='{{{app_hostname}}}/settings'>settings page</a>.
+</small>"""
+
+		var mail = new Mail(email_from, subject, body)
+		mail.to.add user.email
+		mail.header["Content-Type"] = "text/html"
+	    mail.send
+	end
 end
 
 redef class App
@@ -59,12 +91,44 @@ end
 class CheckSites
 	super PopTask
 
+	# Send an alert to `user` about the `status` of `site`
+	fun send_alert(user: User, site: Site, status: Status) do
+		if not user.email_is_valid then return
+		if not user.alerts or not site.alerts then return
+
+		var last_alert = site.last_alert
+		var now = get_time * 1000
+		var del = 86400 * 1000
+		if last_alert != null and last_alert.timestamp + del > now then return
+		config.send_alert(user, site, status)
+	end
+
 	redef fun main do
 		loop
-			for site in config.sites.find_all do
-				config.check_site(site)
+			for user in config.auth_repo.find_all do
+				for site in user.sites(config) do
+					var status = config.check_site(site)
+					if not status.is_ok then send_alert(user, site, status)
+				end
 			end
 			5.0.sleep
 		end
 	end
+end
+
+redef class User
+	serialize
+
+	# Send alerts to this user?
+	var alerts = false is writable
+end
+
+redef class Site
+	serialize
+
+	# Send alerts about this site?
+	var alerts = false is writable
+
+	# Last status send as alert or null if any
+	var last_alert: nullable Status = null
 end
