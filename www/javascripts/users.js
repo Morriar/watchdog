@@ -68,7 +68,13 @@
 
 		/* Controllers */
 
-		.controller('SettingsCtrl', function(Users, session, email, $scope) {
+		.controller('SettingsCtrl', function(Users, session, email, $scope, $state) {
+			if(!session) {
+				var r = window.location.href;
+				$state.go('root.auth.signin', { redirect: r }, { location: false });
+				return;
+			}
+
 			var vm = this;
 			vm.emailForm = email;
 			vm.pwdForm = {};

@@ -1,6 +1,6 @@
 <ul class='nav navbar-nav navbar-right'>
 	<li ng-if='!vm.session'>
-		<a ui-sref='root.auth.signin'>Sign in</a>
+		<a ui-sref='root.auth.signin' ui-sref-opts='{ location: false }'>Sign in</a>
 	</li>
 	<li class='dropdown' ng-if='vm.session'>
 		<a class='btn btn-link dropdown-toggle' type='button' data-toggle='dropdown'>
@@ -15,7 +15,7 @@
 			</li>
 			<li role='separator' class='divider'></li>
 			<li>
-				<a ui-sref='root.auth.signout'>
+				<a ui-sref='root.auth.signout' ui-sref-opts='{ location: false }'>
 					<span class='glyphicon glyphicon-log-out' />&nbsp;&nbsp;
 					Sign out
 				</a>

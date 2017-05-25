@@ -70,7 +70,7 @@
 			.state({
 				name: 'root.otherwise',
 				url: '*path',
-				template: '<panel404 />'
+				templateUrl: '/views/404.html'
 			})
 	})
 

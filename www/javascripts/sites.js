@@ -149,8 +149,14 @@
 		/* Controllers */
 
 		.controller('SitesCtrl', function($scope, $state, Errors, Sites, sites, session) {
+			if(!session) {
+				$state.go('root.auth.signup', null, { location: false });
+				return;
+			}
+
 			var vm = this;
 			vm.session = session;
+			vm.sites = sites;
 
 			vm.init = function() {
 				vm.site = {
@@ -181,20 +187,28 @@
 				}, Errors.handleError);
 			})
 
-			if(!vm.session) {
-				$state.go('root.auth.signup', null, { location: false });
-			} else {
-				vm.init();
-				vm.sites = sites;
-			}
+			vm.init();
 		})
 
 		.controller('SiteCtrl', function($stateParams, $scope, $state, Errors, Sites, site, session) {
+			if(!session) {
+				var r = window.location.href;
+				$state.go('root.auth.signin', null, { location: false });
+				return;
+			}
+
+			if(!site) {
+				var r = window.location.href;
+				$state.go('root.404', null, { location: false });
+				return;
+			}
+
 			var vm = this;
 			vm.session = session;
-
+			vm.site = site;
 			vm.page = $stateParams.p ? $stateParams.p : 1;
 			vm.limit = $stateParams.l ? $stateParams.l : 20;
+			vm.edit = false;
 
 			vm.removeSite = function() {
 				Sites.removeSite(vm.site.id, function(data) {
@@ -229,14 +243,8 @@
 				vm.loadPage(page, limit);
 			})
 
-			if(!vm.session) {
-				$state.go('root.404', null, { location: false });
-			} else {
-				vm.site = site;
-				vm.loadPage(1, 20);
-				vm.loadTimeline();
-				vm.edit = false;
-			}
+			vm.loadPage(1, 20);
+			vm.loadTimeline();
 		})
 
 		/* Directives */

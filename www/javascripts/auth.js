@@ -127,7 +127,7 @@
 				vm.form.password2 = vm.form.password1;
 				Auth.signup(vm.form,
 					function(data) {
-						$state.go('root.home');
+						window.location.reload();
 					}, function(err) {
 						vm.errors = err.errors;
 					});
@@ -142,8 +142,7 @@
 				Auth.signin(vm.form,
 					function(data) {
 						vm.errors = null;
-						// TODO redirect to `from` page
-						window.location.replace("/");
+						window.location.reload();
 					}, function(err) {
 						vm.errors = err.errors;
 						if(err.status == 403) {
@@ -153,9 +152,9 @@
 			}
 		})
 
-		.controller('SignoutCtrl', function(Auth) {
+		.controller('SignoutCtrl', function(Auth, $state) {
 			Auth.signout(function(data) {
-				window.location.replace("/auth/out");
+				window.location.replace('/');
 			}, function(err) {});
 		})
 
