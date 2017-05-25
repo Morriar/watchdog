@@ -35,19 +35,6 @@ redef class AppConfig
 
 	# Site status repository
 	var status = new StatusRepo(db.collection("status")) is lazy
-
-	# --salt
-	var opt_salt = new OptionString("Password salt", "--salt")
-
-	# Salt used to encode_passwords
-	var password_salt: String  is lazy do
-		return opt_salt.value or else ini["app.salt"] or else "watchdog"
-	end
-
-	# Encode `password` in md5 using `password_salt`
-	fun encode_password(password: String): String do
-		return (password + password_salt).md5
-	end
 end
 
 redef class User
