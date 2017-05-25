@@ -1,5 +1,5 @@
 <nav>
-	<ul class='pagination'>
+	<ul class='pagination' ng-if='pagination.pagination.max > 1'>
 		<li ng-class='{disabled: pagination.pagination.page <= 1}'>
 			<a ng-click='pagination.changePage(pagination.pagination.page - 1, pagination.pagination.limit)'><span>&laquo;</span></a>
 		</li>

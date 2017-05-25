@@ -28,7 +28,12 @@ abstract class APIHandler
 		if limit == null or limit <= 0 then limit = 20
 
 		var max = count / limit
-		if page > max then page = max
+		if max == 0 then
+			page = 1
+			max = 1
+		else if page > max then
+			page = max
+		end
 
 		var lstart = (page - 1) * limit
 		var lend = limit

@@ -159,7 +159,7 @@ class APIStatuses
 		var page = req.int_arg("p")
 		var limit = req.int_arg("n")
 		var skip = null
-		if page != null and limit != null then skip = page * limit
+		if page != null and limit != null then skip = (page - 1) * limit
 		var site = get_site(req, res)
 		if site == null then return
 		var results = new JsonArray.from(site.status(config, skip, limit))
