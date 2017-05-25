@@ -18,6 +18,7 @@ module model
 import curl
 import realtime
 import popcorn::pop_auth_basic
+import http_status
 
 redef class AppConfig
 
@@ -122,14 +123,17 @@ class Site
 
 		var code = -1
 		var body = "not run"
+		var status = "Unknown"
 		if res isa CurlResponseSuccess then
 			code = res.status_code
+			status = config.code2status(code)
 			body = res.body_str
 		else if res isa CurlResponseFailed then
 			code = res.error_code
+			status = res.error_msg
 			body = res.error_msg
 		end
-		return new Status(id, time, code, body)
+		return new Status(id, time, code, status, body)
 	end
 
 	private fun send_request: CurlResponse do
@@ -176,6 +180,9 @@ class Status
 
 	# Site response status code
 	var response_code: Int
+
+	# Site response status message
+	var response_status: String
 
 	# Site response body
 	var response_body: String
