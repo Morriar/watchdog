@@ -35,10 +35,6 @@ config.lost_password_uri = "http://{config.app_hostname}/auth/reset_password"
 var app = new App
 app.tasks.add(new CheckSites(config))
 
-config.users.clear
-config.sites.clear
-config.status.clear
-
 app.use_before("/*", new SessionInit)
 app.use("/api", new APIRouter(config))
 app.use("/data", new StaticHandler("data"))
