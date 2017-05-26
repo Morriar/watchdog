@@ -48,7 +48,7 @@ class APIUserEmail
 		var user = require_authentification(req, res)
 		if user == null then return
 
-		res.json new EmailForm(user.email, user.email_is_valid)
+		res.json new EmailForm(user.email, user.email_is_verified)
 	end
 
 	redef fun post(req, res) do
@@ -62,20 +62,20 @@ class APIUserEmail
 		if form == null then return
 
 		user.email = form.email
-		config.send_validation_email user
-		res.json new EmailForm(user.email, user.email_is_valid)
+		config.send_verification_email user
+		res.json new EmailForm(user.email, user.email_is_verified)
 	end
 
 	redef fun put(req, res) do
 		var user = require_authentification(req, res)
 		if user == null then return
 
-		if user.email_is_valid then
+		if user.email_is_verified then
 			res.message("Email already verified", 400)
 			return
 		end
 
-		config.send_validation_email(user)
+		config.send_verification_email(user)
 		res.message("Email verification send", 200)
 	end
 end

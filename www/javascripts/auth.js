@@ -90,17 +90,17 @@
 						.error(cbErr);
 				},
 				signin: function(data, cb, cbErr) {
-					$http.post('/api/auth/login', data)
-						.success(cb)
-						.error(cbErr);
-				},
-				signup: function(data, cb, cbErr) {
 					$http.post('/api/auth/signin', data)
 						.success(cb)
 						.error(cbErr);
 				},
+				signup: function(data, cb, cbErr) {
+					$http.post('/api/auth/signup', data)
+						.success(cb)
+						.error(cbErr);
+				},
 				signout: function(cb, cbErr) {
-					$http.get('/api/auth/logout')
+					$http.get('/api/auth/signout')
 						.success(cb)
 						.error(cbErr);
 				},
@@ -201,6 +201,6 @@
 		})
 
 		.controller('EmailActivationCtrl', function(Auth, $location) {
-			this.status = $location.search().email_validation;
+			this.status = $location.search().email_verification;
 		})
 })();

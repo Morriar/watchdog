@@ -22,6 +22,9 @@ import popcorn::pop_validation
 abstract class APIHandler
 	super UserHandler
 
+	# App config used to access configuration options and repos
+	var config: AppConfig
+
 	# Paginate results
 	fun paginate(results: JsonArray, count: Int, page, limit: nullable Int): JsonObject do
 		if page == null or page <= 0 then page = 1

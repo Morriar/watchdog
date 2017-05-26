@@ -78,7 +78,7 @@ class CheckSites
 
 	# Send an alert to `user` about the `status` of `site`
 	fun send_alert(user: User, site: Site, status: Status) do
-		if not user.email_is_valid then return
+		if not user.email_is_verified then return
 		if not user.alerts or not site.alerts then return
 
 		var last_alert = site.last_alert
