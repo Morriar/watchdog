@@ -16,6 +16,7 @@ See the online version on [watchdog.moz-code.org](http://watchdog.moz-code.org)
 Requirements:
 * [nit](http://nitlanguage.org)
 * [MongoDB](https://docs.mongodb.com).
+* [PhantomJS](http://phantomjs.org/)
 
 ~~~bash
 $ git clone https://github.com/Morriar/watchdog
