@@ -14,63 +14,82 @@
 
 import model
 import popcorn::pop_config
+import console
 
-redef class AppConfig
+class CliConfig
+	super AppConfig
 
 	# --screencap path
 	var opt_screencap = new OptionString("Take a screen capture and save it under the given name",
 		"-s", "--screencap")
 
-	# --timeout X
-	var opt_timeout = new OptionInt("Check site within an infinite loop every X seconds",
-		0, "-t", "--timeout")
+	# --repeat X
+	var opt_repeat = new OptionInt("Repeat check every X seconds",
+		0, "-r", "--repeat")
 
 	# --body
 	var opt_body = new OptionBool("Show the response body", "-b", "--body")
 
-	redef init do
-		super
-		add_option(opt_screencap, opt_timeout, opt_body)
+	# --no-colors
+	var opt_no_colors = new OptionBool("Do not use colors in output", "--no-colors")
+
+	init do
+		opts.options.clear
+		add_option(opt_help, opt_screencap, opt_repeat, opt_body, opt_no_colors)
+	end
+
+	fun cli_status(site: Site, screencap_file: nullable String) do
+		var status = site.check_status(self)
+		if screencap_file != null then
+			if not site.gen_screencap(screencap_file) then
+				print "Error generating screencap"
+			else
+				status.screencap = screencap_file
+			end
+		end
+		print color_status(status)
+		if opt_body.value then
+			print "Body:\n{status.response_body}"
+		end
+		if status.screencap != null then
+			print "Screen capture generated to {status.screencap.as(not null)}"
+		end
+	end
+
+	fun color_status(status: Status): String do
+		var res = "{status.response_time}s"
+		if opt_no_colors.value then
+			return "{status.response_code} - {status.response_status} - {res}"
+		end
+		if not status.is_ok then
+			return "{status.response_code.to_s.red} - {status.response_status.red} - {res}"
+		end
+		return "{status.response_code.to_s.green} - {status.response_status.green} - {res}"
 	end
 end
 
-var config = new AppConfig
+var config = new CliConfig
 config.parse_options(args)
+config.tool_description = "usage: watchdog [options] url"
 
 if config.args.length != 1 then
-	print "usage: watchdog [options] url"
+	config.usage
 	exit 1
 end
 
 var site = new Site("cli", config.args.first)
 
 
-var timeout = config.opt_timeout.value
+var timeout = config.opt_repeat.value
 if timeout > 0 then
 	print "Checking {site.url} every {timeout} seconds"
 	loop
-		var status = site.check_status(config)
-		print " {status.response_code} - took {status.response_time}s"
+		var screencap = config.opt_screencap.value
+		if screencap != null then screencap = "{get_time}.{screencap}"
+		config.cli_status(site, screencap)
 		timeout.to_f.sleep
 	end
 else
-	print "Checking {site.url}\n"
-	var status = site.check_status(config)
-	var screencap = config.opt_screencap.value
-	if screencap != null then
-		if not site.gen_screencap(screencap) then
-			print "Error generating screencap"
-		else
-			status.screencap = screencap
-		end
-	end
-
-	print "Response code: {status.response_code}"
-	print "Response time: {status.response_time}s"
-	if config.opt_body.value then
-		print "Response body: {status.response_body}"
-	end
-	if status.screencap != null then
-		print "Screen capture generated to {status.screencap.as(not null)}"
-	end
+	print "Checking {site.url}"
+	config.cli_status(site, config.opt_screencap.value)
 end
